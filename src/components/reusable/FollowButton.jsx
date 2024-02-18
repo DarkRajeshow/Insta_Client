@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { Context } from '../../context/Store';
 
 
-export default function FollowButton({ size, userToFollow, initialFollowStatus }) {
+export default function FollowButton({ size, userToFollow, fetchLoggedUser, initialFollowStatus }) {
     const [loading, setLoading] = useState(false);
     const [isFollowing, setIsFollowing] = useState(initialFollowStatus);
     const { toggleFollow } = useContext(Context);
@@ -17,6 +17,9 @@ export default function FollowButton({ size, userToFollow, initialFollowStatus }
                 setIsFollowing(!isFollowing);
             }
             setLoading(false);
+            if (fetchLoggedUser) {
+                fetchLoggedUser();
+            }
         }} className={`bg-zinc-800 px-4 py-1.5 rounded-full flex text-gray-300 items-center justify-center gap-1 transition-all hover:bg-blue-700 ${size === "big" ? "py-2" : "text-sm"}`}>
             {
                 loading && <span className='h-4 w-4 rounded-full border-[3px] border-light/70 border-t-transparent spin' />
@@ -34,5 +37,6 @@ FollowButton.propTypes = {
     size: PropTypes.string,
     userToFollow: PropTypes.string.isRequired,
     initialFollowStatus: PropTypes.bool.isRequired,
+    fetchLoggedUser: PropTypes.func
 };
 

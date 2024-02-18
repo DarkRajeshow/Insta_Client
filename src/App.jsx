@@ -33,14 +33,19 @@ function App() {
     '/Messages',
     '/upload',
   ];
-
   // Check if the current location matches any of the paths in showFooterPaths
   const showFooter = showFooterPaths.includes(location.pathname);
+
+  const notShowNavPaths = [
+    '/post',
+  ];
+
+  const notShowNav = notShowNavPaths.some(path => location.pathname.includes(path));
 
   return (
     <main>
       <Toaster richColors position="top-center" theme='dark' />
-      <Navbar />
+      <Navbar notShowNav={notShowNav} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />

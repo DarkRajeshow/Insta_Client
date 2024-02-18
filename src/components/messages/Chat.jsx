@@ -2,12 +2,14 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom';
 import convertToAMPM from '../../utility/covertToAMPM'
 import Cookies from 'js-cookie';
-import { useContext, useEffect, useRef } from 'react';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { Context } from '../../context/Store';
 import SmartLoader from '../reusable/SmartLoader';
-export default function Chat({ sendMessage, messageLoading }) {
 
-  const { messages, messageInput, selectedUserForChat, setMessageInput } = useContext(Context);
+
+
+const ChatComponent = ({ sendMessage }) => {
+  const { messages, messageInput, messageLoading, selectedUserForChat, setMessageInput } = useContext(Context);
 
   const currentLyLoggedUser = Cookies.get("userId");
 
@@ -34,7 +36,7 @@ export default function Chat({ sendMessage, messageLoading }) {
         <div ref={scrollDivRef} className="messageInput-container w-full my-14 p-4 h-[68vh] overflow-y-auto">
           {!messageLoading && messages
             .map((messageInput, index) => {
-              const isItYou = messageInput.sender === currentLyLoggedUser && messageInput.receiver === selectedUserForChat._id;
+              const isItYou = messageInput.sender === currentLyLoggedUser;
               return (
                 <div key={index} className={`fade-in-5 animate-in my-4 cursor-pointer max-w-[250px] w-[50vw] auto flex flex-col gap-1 ${isItYou ? "ml-auto" : "mr-auto"}`}>
                   <div className={`messageInput text-sm p-2 rounded-sm ${isItYou ? "bg-[#455EFF] text-light " : "text-light/85 bg-zinc-700/40"}`}>
@@ -48,7 +50,7 @@ export default function Chat({ sendMessage, messageLoading }) {
           {
             messageLoading && (
               <div>
-                <SmartLoader className='h-full'/>
+                <SmartLoader className='h-[60vh]' />
               </div>
             )
           }
@@ -85,7 +87,11 @@ export default function Chat({ sendMessage, messageLoading }) {
   );
 }
 
-Chat.propTypes = {
-  sendMessage: PropTypes.func.isRequired,
-  messageLoading: PropTypes.bool.isRequired
+
+ChatComponent.propTypes = {
+  sendMessage: PropTypes.func.isRequired
 };
+
+const Chat = memo(ChatComponent);
+
+export default Chat;

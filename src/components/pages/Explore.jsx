@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Cookies from "js-cookie";
@@ -17,7 +17,8 @@ export default function Explore() {
 
     const currentlyLoggedUser = Cookies.get("userId");
 
-    const fetchExplorePosts = async () => {
+
+    const fetchExplorePosts = useCallback(async () => {
         try {
             const { data } = await axios.get(`/api/posts/explore/${offset}`);
 
@@ -39,9 +40,10 @@ export default function Explore() {
             console.error(error);
         }
         setLoading(false);
-    }
+    }, [offset, explorePosts])
 
-    const searchPosts = async () => {
+
+    const searchPosts = useCallback(async () => {
         setSearchLoading(true);
         setOffset(0);
         if (searchQuery === "") {
@@ -50,7 +52,6 @@ export default function Explore() {
         }
         try {
             const { data } = await axios.get(`/api/posts/search?query=${searchQuery}`);
-            console.log(data);
             if (data.success) {
                 setExplorePosts(data.explore);
                 setHasMore(false);
@@ -59,18 +60,15 @@ export default function Explore() {
             console.error(error);
         }
         setSearchLoading(false);
-    }
+    }, [fetchExplorePosts, searchQuery])
 
 
     useEffect(() => {
-
         if (searchQuery === "") {
-            console.log("fetch");
             fetchExplorePosts();
         }
 
         else {
-            console.log("search");
             searchPosts();
         }
 

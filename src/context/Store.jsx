@@ -19,6 +19,7 @@ export const StoreProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState("");
     const [selectedUserForChat, setSelectedUserForChat] = useState(null);
+    const [messageLoading, setMessageLoading] = useState(false);
 
 
     const likePost = async (postId, reFetchPost) => {
@@ -155,11 +156,11 @@ export const StoreProvider = ({ children }) => {
 
 
     const toggleFollow = async (userIdToFollow) => {
-        if (!loggedUserData) {
-            toast.error("Login to continue");
-            navigate(`/login?callback=${location.pathname}`)
-            return;
-        }
+        // if (!loggedUserData) {
+        //     toast.error("Login to continue");
+        //     navigate(`/login?callback=${location.pathname}`)
+        //     return;
+        // }
 
         try {
             const { data } = await axios.put(`/api/toggle-follow`, { userIdToFollow });
@@ -206,7 +207,9 @@ export const StoreProvider = ({ children }) => {
             setSelectedUserForChat,
             toggleFollow,
             userWithFollowing,
-            setUserWithFollowing
+            setUserWithFollowing,
+            messageLoading,
+            setMessageLoading
         }}>
             <div>{children}</div>
         </Context.Provider>

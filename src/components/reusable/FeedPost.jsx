@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { useContext, useEffect, useRef, useState } from "react";
+import { memo, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from '../ui/skeleton'
 import PropTypes from 'prop-types';
@@ -22,7 +22,7 @@ const handleIntersection = (entries) => {
 };
 
 
-export default function FeedPost({ initialPost, following, toggleFollow }) {
+function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const postId = initialPost._id;
     const currentlyLoggedUser = Cookies.get("userId");
     const [loading, setLoading] = useState(false);
@@ -340,7 +340,7 @@ export default function FeedPost({ initialPost, following, toggleFollow }) {
 }
 
 
-FeedPost.propTypes = {
+FeedPostComponent.propTypes = {
     initialPost: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         author: PropTypes.shape({
@@ -358,3 +358,8 @@ FeedPost.propTypes = {
     following: PropTypes.bool.isRequired,
     toggleFollow: PropTypes.func.isRequired
 };
+
+
+const FeedPost = memo(FeedPostComponent);
+
+export default FeedPost

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -15,30 +15,22 @@ import {
 export default function Messages() {
     const [loading, setLoading] = useState(true);
     const [collapse, setCollapse] = useState(false);
-    const { socket, setSocket, messages, setMessages, setSelectedUserForChat, userWithFollowing, setUserWithFollowing, messageInput, setMessageInput, selectedUserForChat } = useContext(Context);
+
+    const { socket, setSocket, messages, setMessages, setSelectedUserForChat, userWithFollowing, setUserWithFollowing, messageInput, setMessageInput, selectedUserForChat, setMessageLoading } = useContext(Context);
     const currentLyLoggedUser = Cookies.get("userId");
-    const [messageLoading, setMessageLoading] = useState(false);
 
-    useEffect(() => {
-        const memoizedSocket = io('http://localhost:8080');
-
-        setSocket(memoizedSocket);
-
-        return () => memoizedSocket.close();
-    }, []);
-
-    const saveMessage = async (messageData, endpoint) => {
+    const saveMessage = useCallback(async (messageData) => {
         try {
-            const { data } = await axios.put(`/api/messages/${endpoint}`, messageData);
+            const { data } = await axios.put(`/api/messages/save`, messageData);
             if (!data.success) {
                 console.log(data.status);
             }
         } catch (error) {
-            console.error(`Error ${endpoint === 'send' ? 'sending' : 'receiving'} message:`, error);
+            console.error(`Error saving message:`, error);
         }
-    };
+    }, []);
 
-    const fetchLoggedUser = async () => {
+    const fetchLoggedUser = useCallback(async () => {
         if (!currentLyLoggedUser) {
             setLoading(false);
             return;
@@ -52,42 +44,10 @@ export default function Messages() {
             console.error('Error fetching logged user:', error);
         }
         setLoading(false);
-    };
+    }, [currentLyLoggedUser, setUserWithFollowing]);
 
-    useEffect(() => {
-        fetchLoggedUser();
-    }, []);
-
-    useEffect(() => {
-        if (socket) {
-            socket.on('connect', async () => {
-                console.log("connected");
-                await socket.emit("join_room", currentLyLoggedUser);
-            });
-
-            socket.on('joined', (msg) => {
-                console.log(msg);
-            });
-
-            socket.on('receive_message', async (msg) => {
-                await saveMessage({ content: msg.content, sender: msg.sender }, 'receive');
-                await fetchMessagesFromDB();
-            });
-        }
-    }, [socket, selectedUserForChat]);
-
-    const sendMessage = async (e) => {
-        e.preventDefault();
-        if (!selectedUserForChat) return;
-        const messageData = { content: messageInput, receiver: selectedUserForChat._id, sender: currentLyLoggedUser };
-        await saveMessage(messageData, 'send');
-        await fetchMessagesFromDB();
-        socket.emit("new_message", messageData);
-        setMessageInput("");
-    };
-
-    const fetchMessagesFromDB = async () => {
-        if (selectedUserForChat) {
+    const fetchMessagesFromDB = useCallback(async () => {
+        if (selectedUserForChat && currentLyLoggedUser) {
             try {
                 const { data } = await axios.get(`/api/messages/${selectedUserForChat._id}`);
                 if (data.success) setMessages(data.messages);
@@ -95,18 +55,28 @@ export default function Messages() {
                 console.error('Error fetching messages:', error);
             }
         }
-    };
-    
-    const fetchInitialMessages = async () => {
+    }, [selectedUserForChat, setMessages, currentLyLoggedUser]);
+
+    const fetchInitialMessages = useCallback(async () => {
         setMessageLoading(true);
         await fetchMessagesFromDB();
         setMessageLoading(false);
-    }
+    }, [fetchMessagesFromDB, setMessageLoading]);
+
+    useEffect(() => {
+        fetchLoggedUser();
+    }, [fetchLoggedUser]);
+
+    useEffect(() => {
+        const memoizedSocket = io('http://localhost:8080');
+        setSocket(memoizedSocket);
+
+        return () => memoizedSocket.close();
+    }, [setSocket]);
 
     useEffect(() => {
         fetchInitialMessages();
-    }, [selectedUserForChat]);
-
+    }, [fetchInitialMessages]);
 
     useEffect(() => {
         const handleKeyPress = (e) => {
@@ -120,14 +90,50 @@ export default function Messages() {
         return () => {
             document.removeEventListener("keydown", handleKeyPress);
         };
-    }, []);
+    }, [setSelectedUserForChat]);
 
+    useEffect(() => {
+        if (socket) {
+            socket.on('connect', async () => {
+                console.log("connected");
+                await socket.emit("join_room", currentLyLoggedUser);
+            });
+
+            socket.on('joined', (msg) => {
+                console.log(msg);
+            });
+
+            socket.on('receive_message', async () => {
+                await fetchMessagesFromDB();
+            });
+        }
+    }, [socket, currentLyLoggedUser, saveMessage, fetchMessagesFromDB]);
+
+
+    const sendMessage = useCallback(async (e) => {
+        e.preventDefault();
+        if (!selectedUserForChat) return;
+        const messageData = {
+            content: messageInput,
+            receiver: selectedUserForChat._id,
+            sender: currentLyLoggedUser
+        };
+        await saveMessage(messageData);
+        await fetchMessagesFromDB();
+        socket.emit("new_message", messageData);
+        setMessageInput("");
+    }, [currentLyLoggedUser, selectedUserForChat, messageInput, saveMessage, fetchMessagesFromDB, setMessageInput, socket]);
+    
+
+    useEffect(() => {
+        setSelectedUserForChat(null);
+    }, [userWithFollowing, setSelectedUserForChat])
 
     return (
         <main className='h-[88vh] sm:h-[85vh] px-6 gap-0.5 flex' >
             {loading && <SmartLoader className='h-[85vh] absolute w-full bg-zinc-900 ' />}
-            {!loading && <>
 
+            {!loading && <>
                 <div className='sm:block hidden w-full'>
                     <ResizablePanelGroup className="transition-none flex-col gap-1" direction="horizontal">
                         <ResizablePanel className="transition-none">
@@ -141,7 +147,6 @@ export default function Messages() {
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </div>
-
                 <div className='flex flex-col w-full relative sm:hidden'>
                     <div className='w-[40px] my-2'>
                         <button onClick={() => setCollapse(!collapse)} className={`hover:bg-zinc-700/40 right-2 top-4 px-2 rounded-sm text-muted text-lg cursor-pointer ${collapse && "bg-zinc-700/50"}`}>
@@ -153,7 +158,7 @@ export default function Messages() {
                             {userWithFollowing && <FollowingForMsg setCollapse={setCollapse} />}
                         </div>
                         <div className={`chat bg-zinc-800/20 rounded-lg w-full h-full`}>
-                            {userWithFollowing && messages && <Chat messageLoading={messageLoading} sendMessage={sendMessage} />}
+                            {userWithFollowing && messages && <Chat sendMessage={sendMessage} />}
                         </div>
                     </div>
                 </div>

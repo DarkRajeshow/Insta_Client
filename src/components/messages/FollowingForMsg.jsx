@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { Context } from "../../context/Store";
 import PropTypes from 'prop-types';
 
-const FollowingForMsg = ({ setCollapse }) => {
+let FollowingForMsg = ({ setCollapse }) => {
 
   const { userWithFollowing, setSelectedUserForChat, selectedUserForChat } = useContext(Context);
   const following = userWithFollowing.following;
@@ -10,18 +10,19 @@ const FollowingForMsg = ({ setCollapse }) => {
   const [users, setUsers] = useState(following);
   const [query, setQuery] = useState("");
 
-  const SearchUsers = () => {
-    const searchResult = following.filter((user) => {
-      const reqEx = new RegExp(query, "i");
-      return reqEx.test(user.name) || reqEx.test(user.username);
-    });
-    setUsers(searchResult);
-  };
+  const SearchUsers = useCallback(
+    () => {
+      const searchResult = following.filter((user) => {
+        const reqEx = new RegExp(query, "i");
+        return reqEx.test(user.name) || reqEx.test(user.username);
+      });
+      setUsers(searchResult);
+    }, [following, query]);
 
 
   useEffect(() => {
     SearchUsers();
-  }, [query]);
+  }, [SearchUsers]);
 
   return (
     <div className="px-1 relative select-none animate-in">
@@ -29,7 +30,7 @@ const FollowingForMsg = ({ setCollapse }) => {
         <h1>Chats</h1>
       </div>
       <div className="px-2 sm:px-4 py-2 sm:py-3">
-        <div className="search flex text-xs sm:text-sm text-light items-center gap-2 px-2 border border-light/20 rounded-sm border-b-green-500">
+        <div className="search flex text-xs sm:text-sm text-light items-center gap-2 px-2 border border-light/10 rounded-sm focus-within:border-light/30 focus-within:border-b-green-400">
           <i className="ri-search-line py-2"></i>
           <input
             value={query}
@@ -82,5 +83,10 @@ const FollowingForMsg = ({ setCollapse }) => {
 FollowingForMsg.propTypes = {
   setCollapse: PropTypes.func.isRequired,
 };
+
+FollowingForMsg = memo(FollowingForMsg, (prevProps, nextProps) => {
+  // Only re-render when setCollapse prop changes
+  return prevProps.setCollapse === nextProps.setCollapse;
+});
 
 export default FollowingForMsg;

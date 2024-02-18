@@ -3,8 +3,9 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import PropTypes from 'prop-types';
 
-export default function Navbar() {
+export default function Navbar({ notShowNav }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const location = useLocation();
@@ -50,7 +51,7 @@ export default function Navbar() {
 
 
     return (
-        <nav className="bg-transparent text-light mt-5 mb-3 sm:my-5 w-full top-5 select-none">
+        <nav className={`bg-transparent text-light mt-5 mb-3 sm:my-5 w-full top-5 select-none ${notShowNav && "hidden"}`}>
             <div className="nav flex justify-between items-center px-6">
                 <Link to={"/"}>
                     <img src="/logo.png" alt="Logo" className="h-10" />
@@ -81,8 +82,8 @@ export default function Navbar() {
 
 
                     <div onClick={() => {
-                            setMenuOpen(!menuOpen)
-                        }}
+                        setMenuOpen(!menuOpen)
+                    }}
                         className='cursor-pointer flex items-center'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${menuOpen ? "rotate-90" : "rotate-0"}`}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
@@ -117,4 +118,8 @@ export default function Navbar() {
             </div >
         </nav >
     )
+}
+
+Navbar.propTypes = {
+    notShowNav: PropTypes.bool.isRequired
 }

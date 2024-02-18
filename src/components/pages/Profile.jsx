@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom'
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 import PostCard from '../reusable/PostCard'
@@ -25,7 +25,8 @@ const Profile = () => {
     const { setLoggedUser } = useContext(Context);
 
     const [loading, setLoading] = useState(false);
-
+    const [followUsers, setFollowUsers] = useState(followData);
+    const [query, setQuery] = useState("");
 
     const [user, setUser] = useState({
         _id: "",
@@ -74,11 +75,11 @@ const Profile = () => {
         }
     }
 
-    const showFollowing = async () => {
+    const showFollow = async (route) => {
         setFollowLoading(true);
 
         try {
-            const { data } = await axios.get(`/api/following/${user._id}`);
+            const { data } = await axios.get(`/api/${route}/${user._id}`);
 
             if (data.success) {
                 setFollowData(data.users)
@@ -96,51 +97,72 @@ const Profile = () => {
         setFollowLoading(false);
     }
 
-    const showFollwers = async () => {
-        setFollowLoading(true);
 
-        try {
-            const { data } = await axios.get(`/api/followers/${user._id}`);
 
-            if (data.success) {
-                setFollowData(data.users)
+    // for searching user within the following or followers dialog
+    const SearchUsers = useCallback(
+        (follow) => {
+            if (!follow) {
+                return;
+
             }
+            const searchResult = followData.filter((user) => {
+                const reqEx = new RegExp(query, "i");
+                return reqEx.test(user.name) || reqEx.test(user.username);
+            });
+            setFollowUsers(searchResult);
+        }, [followData, query]);
 
-            else {
-                toast.error("Something went wrong.");
-            }
 
-        } catch (error) {
-            console.log(error);
-            toast.error("Client error.");
-        }
+    useEffect(() => {
+        SearchUsers(followTitle.toLocaleLowerCase());
+    }, [SearchUsers, followTitle]);
 
-        setFollowLoading(false);
-    }
 
     useEffect(() => {
         fetchLoggedUser();
     }, [])
 
+    // fetchLoggedUser
+
     return (
         <Dialog>
             <DialogContent className="h-[65vh] w-[450px] bg-dark text-light border-none block">
-                <h1 className="text-2xl font-bold h-10 mb-0 border-b-2 border-zinc-700">{followTitle}</h1>
-                <div className="my-2 h-[90%] ">
+                <div className='flex flex-col gap-1.5 mb-4'>
+                    <h1 className="text-2xl font-bold">{followTitle}</h1>
+                    <div className="search flex text-xs sm:text-sm text-light items-center gap-2 px-2 border border-light/10 focus-within:border-light/30  rounded-sm focus-within:border-b-green-400">
+                        <i className="ri-search-line py-2"></i>
+                        <input
+                            value={query}
+                            onChange={(e) => {
+                                setQuery(e.target.value);
+                            }}
+                            type="text"
+                            className="py-2 bg-transparent w-[90%] focus:outline-none outline-none"
+                            placeholder="Search user"
+                        />
+                    </div>
+                </div>
+                <div className="mt-1 h-[90%]">
                     {
-                        !followLoading && followData && followData.map((User) => (
-                            <div key={User._id} className='flex items-center hover:bg-zinc-800 bg-zinc-800/50 rounded-lg my-1 justify-between w-full py-3 px-2'>
-                                <Link to={`/user/${User.username}`} className="follow bottom-0 flex items-center gap-3 transition-all">
-                                    <img src={`/api/uploads/${User.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={User.name} />
-                                    <div className="flex flex-col text-light">
-                                        <h3 className="text-base font-semibold">{User.name}</h3>
-                                        <p className="text-sm font-semibold">@{User.username}</p>
-                                    </div>
-                                </Link>
-                                <FollowButton initialFollowStatus={user.following.indexOf(User._id) >= -1} userToFollow={User._id} />
-                            </div>
+                        !followLoading && followData && followUsers.map((User) => {
 
-                        ))
+                            const initialFollowStatus = user.following.indexOf(User._id) !== -1
+
+                            return (
+                                <div key={User._id} className='flex items-center hover:bg-zinc-800 bg-zinc-800/50 rounded-lg my-1 justify-between w-full py-3 px-2'>
+                                    <Link to={`/user/${User.username}`} className="follow bottom-0 flex items-center gap-3 transition-all">
+                                        <img src={`/api/uploads/${User.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={User.name} />
+                                        <div className="flex flex-col text-light">
+                                            <h3 className="text-base font-semibold">{User.name}</h3>
+                                            <p className="text-sm font-semibold">@{User.username}</p>
+                                        </div>
+                                    </Link>
+                                    <FollowButton fetchLoggedUser={fetchLoggedUser} initialFollowStatus={initialFollowStatus} userToFollow={User._id} />
+                                </div>
+
+                            )
+                        })
                     }
                     {
                         followLoading && (
@@ -182,14 +204,14 @@ const Profile = () => {
                         </div>
                         <DialogTrigger onClick={() => {
                             setfollowTitle("Followers")
-                            showFollwers();
+                            showFollow("followers");
                         }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all">
                             <h3>{user.followers?.length}</h3>
                             <h4>Followers</h4>
                         </DialogTrigger>
                         <DialogTrigger onClick={() => {
                             setfollowTitle("Following")
-                            showFollowing();
+                            showFollow("following");
                         }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all">
                             <h3>{user.following?.length}</h3>
                             <h4>Following</h4>
