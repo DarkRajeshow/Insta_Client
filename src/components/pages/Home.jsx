@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -7,6 +6,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import FeedPost from "../reusable/FeedPost";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import api from '../../assets/api'
 
 export default function Home() {
 
@@ -23,7 +23,7 @@ export default function Home() {
   const fetchFeedPosts = async () => {
 
     try {
-      const { data } = await axios.get(`/api/feed/${offset}`);
+      const { data } = await api.get(`/api/feed/${offset}`);
 
       if (data.success) {
         if (data.feed.length === 0) {
@@ -50,7 +50,7 @@ export default function Home() {
     }
 
     try {
-      const { data } = await axios.put(`/api/toggle-follow`, { userIdToFollow });
+      const { data } = await api.put(`/api/toggle-follow`, { userIdToFollow });
 
       if (data.success) {
         toast.success(data.status);

@@ -1,8 +1,10 @@
-import axios from "axios"
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import PropTypes from 'prop-types'
+import api from "../../assets/api";
+import filePath from '../../assets/filePath'
+
 
 export default function Footer({ showFooter }) {
     const [user, setUser] = useState(null);
@@ -14,7 +16,7 @@ export default function Footer({ showFooter }) {
             return;
         }
         try {
-            const { data } = await axios.get("/api/user");
+            const { data } = await api.get("/api/user");
             if (data.success) {
                 setUser(data.user)
             }
@@ -36,7 +38,7 @@ export default function Footer({ showFooter }) {
                 <Link to="/upload"><i className="text-[1.4rem] ri-add-box-line"></i></Link>
                 <Link to="/profile">
                     <div className="w-6 h-6 bg-zinc-300 rounded-full overflow-hidden">
-                        <img src={`/api/uploads/${user.dp}`} alt="" />
+                        <img src={`${filePath}/${user.dp}`} alt="" />
                     </div>
                 </Link>
             </footer>}
@@ -47,5 +49,5 @@ export default function Footer({ showFooter }) {
 
 
 Footer.propTypes = {
-    showFooter : PropTypes.bool.isRequired
+    showFooter: PropTypes.bool.isRequired
 }

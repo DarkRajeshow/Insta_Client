@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import UserSearchCard from '../reusable/UserSearchCard';
+import api from '../../assets/api';
 
 const Search = () => {
     const [searchResults, setSearchResults] = useState([]);
@@ -23,7 +23,7 @@ const Search = () => {
 
         if (query !== "") {
             try {
-                const { data } = await axios.get(`/api/search/${query}`);
+                const { data } = await api.get(`/api/search/${query}`);
                 if (data.success) {
                     setSearchResults(data.users);
                 }

@@ -1,8 +1,9 @@
-import axios from "axios";
+
 import { useContext, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner";
 import { Context } from "../../context/Store";
+import api from "../../assets/api";
 
 const Login = () => {
 
@@ -23,7 +24,7 @@ const Login = () => {
         const userCredentials = { username, password };
 
         try {
-            const { data } = await axios.post("/api/login", userCredentials);
+            const { data } = await api.post("/api/login", userCredentials, { withCredentials: true });
 
             if (data.success) {
                 setLoading(false);

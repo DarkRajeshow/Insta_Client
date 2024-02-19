@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,6 +8,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import api from "../../assets/api";
+import filePath from "../../assets/filePath";
+
 
 const Edit = () => {
 
@@ -31,7 +33,7 @@ const Edit = () => {
 
     const fetchUserData = async () => {
         try {
-            const { data } = await axios.get("/api/user");
+            const { data } = await api.get("/api/user");
             if (data.success) {
                 setUser(data.user);
             }
@@ -71,7 +73,7 @@ const Edit = () => {
         const formData = new FormData(e.target);
 
         try {
-            const { data } = await axios.put("/api/user", formData);
+            const { data } = await api.put("/api/user", formData);
             if (data.success) {
                 toast.success(data.status)
                 navigate("/profile");
@@ -106,7 +108,7 @@ const Edit = () => {
                     <img
                         id="dpview"
                         className="h-full w-full object-cover rounded-full"
-                        src={`/api/uploads/${user.dp}`}
+                        src={`${filePath}/${user.dp}`}
                         alt=""
                     />
                 </div>

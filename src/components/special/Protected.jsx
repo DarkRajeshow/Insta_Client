@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
-import axios from "axios";
 import Cookies from "js-cookie";
+import api from "../../assets/api";
+
 
 export default function Protected(props) {
     const { Component } = props;
@@ -12,15 +13,17 @@ export default function Protected(props) {
     const isLoggedIn = async () => {
         const userId = Cookies.get("userId");
 
+        console.log(userId);
+
         if (!userId) {
             if (location.pathname !== "/login") {
                 navigate(`/login?callback=${location.pathname}`)
             }
-            navigate(`/login`)
+            navigate(`/login`);
         }
 
         else {
-            const { data } = await axios.get("/api/isloggedin");
+            const { data } = await api.get("/api/isloggedin");
             if (!data.success) {
                 navigate("/login");
             }

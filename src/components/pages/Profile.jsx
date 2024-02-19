@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
@@ -12,7 +11,8 @@ import {
 } from "@/components/ui/dialog"
 import SmartLoader from '../reusable/SmartLoader';
 import FollowButton from '../reusable/FollowButton';
-
+import api from '../../assets/api';
+import filePath from '../../assets/filePath';
 
 const Profile = () => {
 
@@ -45,7 +45,7 @@ const Profile = () => {
     const fetchLoggedUser = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`/api/user?full=true`);
+            const { data } = await api.get(`/api/user?full=true`);
 
             if (data.success) {
                 setUser(data.user)
@@ -60,7 +60,7 @@ const Profile = () => {
     const logOut = async () => {
         try {
             Cookies.remove("userId");
-            const { data } = await axios.get("/api/logout");
+            const { data } = await api.get("/api/logout");
             if (data.success) {
                 toast.success(data.status)
                 setLoggedUser(null);
@@ -79,7 +79,7 @@ const Profile = () => {
         setFollowLoading(true);
 
         try {
-            const { data } = await axios.get(`/api/${route}/${user._id}`);
+            const { data } = await api.get(`/api/${route}/${user._id}`);
 
             if (data.success) {
                 setFollowData(data.users)
@@ -152,7 +152,7 @@ const Profile = () => {
                             return (
                                 <div key={User._id} className='flex items-center hover:bg-zinc-800 bg-zinc-800/50 rounded-lg my-1 justify-between w-full py-3 px-2'>
                                     <Link to={`/user/${User.username}`} className="follow bottom-0 flex items-center gap-3 transition-all">
-                                        <img src={`/api/uploads/${User.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={User.name} />
+                                        <img src={`${filePath}/${User.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={User.name} />
                                         <div className="flex flex-col text-light">
                                             <h3 className="text-base font-semibold">{User.name}</h3>
                                             <p className="text-sm font-semibold">@{User.username}</p>
@@ -187,7 +187,7 @@ const Profile = () => {
                     <div className="w-[12vw] h-[12vw] bg-sky-100 rounded-full">
                         <img
                             className="h-full w-full object-cover rounded-full border border-light"
-                            src={user.dp && `/api/uploads/${user.dp}`}
+                            src={user.dp && `${filePath}/${user.dp}`}
                             alt={`${user.username}'s profile picture`}
                         />
                     </div>

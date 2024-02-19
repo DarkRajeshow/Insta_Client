@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { memo, useContext, useEffect, useRef } from 'react';
 import { Context } from '../../context/Store';
 import SmartLoader from '../reusable/SmartLoader';
+import filePath from '../../assets/filePath';
 
 
 
@@ -26,7 +27,7 @@ const ChatComponent = ({ sendMessage }) => {
     <div className="relative chat col-span-9 rounded-lg h-full overflow-hidden">
       {selectedUserForChat && <>
         <Link to={`/user/${selectedUserForChat.username}`} className='absolute top-0 w-full p-2 flex items-center group gap-2 bg-zinc-800/30 border-b border-b-zinc-700/40'>
-          <img src={`/api/uploads/${selectedUserForChat.dp}`} className="h-10 w-10 rounded-full" alt={selectedUserForChat.name} />
+          <img src={`${filePath}/${selectedUserForChat.dp}`} className="h-10 w-10 rounded-full" alt={selectedUserForChat.name} />
           <div className="flex flex-col text-light/90">
             <h3 className="text-sm text-zinc-300 group-hover:text-blue-300">{selectedUserForChat.name}</h3>
             <p className="text-xs text-zinc-500">{selectedUserForChat.bio}</p>

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -6,6 +5,7 @@ import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import PostCard from "../reusable/PostCard";
 import { Skeleton } from "../ui/skeleton";
+import api from "../../assets/api";
 
 export default function Saved() {
 
@@ -17,7 +17,7 @@ export default function Saved() {
 
     const fetchSavedPosts = async () => {
         try {
-            const { data } = await axios.get(`/api/saved/${offset}`);
+            const { data } = await api.get(`/api/saved/${offset}`);
 
             console.log(data);
 

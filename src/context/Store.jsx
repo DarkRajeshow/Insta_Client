@@ -2,8 +2,8 @@ import { createContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import isLoggedIn from '@/utility/isLoggedIn';
 import { toast } from 'sonner';
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '@/assets/api';
 
 export const Context = createContext();
 
@@ -31,7 +31,7 @@ export const StoreProvider = ({ children }) => {
         else {
             try {
                 console.log(postId);
-                const { data } = await axios.put(`/api/like`, { postId });
+                const { data } = await api.put(`/api/like`, { postId });
                 console.log(data);
                 if (data.success) {
                     toast.success(data.status);
@@ -56,7 +56,7 @@ export const StoreProvider = ({ children }) => {
         }
         else {
             try {
-                const { data } = await axios.put(`/api/comments/like`, { commentId: commentId });
+                const { data } = await api.put(`/api/comments/like`, { commentId: commentId });
                 if (data.success) {
                     toast.success(data.status);
                     await reloadComments();
@@ -74,7 +74,7 @@ export const StoreProvider = ({ children }) => {
 
     const deletePost = async (postId) => {
         try {
-            const { data } = await axios.delete(`/api/posts/${postId}`);
+            const { data } = await api.delete(`/api/posts/${postId}`);
             if (data.success) {
                 toast.success(data.status);
                 navigate("/profile");
@@ -108,7 +108,7 @@ export const StoreProvider = ({ children }) => {
 
     const deleteComment = async (commentId, showComments, fetchPost) => {
         try {
-            const { data } = await axios.delete(`/api/comments/${commentId}`);
+            const { data } = await api.delete(`/api/comments/${commentId}`);
 
             if (data.success) {
                 toast.success(data.status);
@@ -136,7 +136,7 @@ export const StoreProvider = ({ children }) => {
 
         else {
             try {
-                const { data } = await axios.put(`/api/save`, { postId });
+                const { data } = await api.put(`/api/save`, { postId });
                 console.log(data);
                 if (data.success) {
                     toast.success(data.status);
@@ -163,7 +163,7 @@ export const StoreProvider = ({ children }) => {
         // }
 
         try {
-            const { data } = await axios.put(`/api/toggle-follow`, { userIdToFollow });
+            const { data } = await api.put(`/api/toggle-follow`, { userIdToFollow });
 
             if (data.success) {
                 toast.success(data.status);

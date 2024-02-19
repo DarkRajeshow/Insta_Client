@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { Link } from "react-router-dom"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useState } from 'react';
+import filePath from '@/assets/filePath';
 
 export default function PostCard({ post, index, userId }) {
 
@@ -50,13 +51,13 @@ export default function PostCard({ post, index, userId }) {
                     muted
                     playsInline
                 >
-                    <source src={post.media && `/api/uploads/${post.media}`} type="video/mp4" />
+                    <source src={post.media && `${filePath}/${post.media}`} type="video/mp4" />
                 </video>
             ) : (
                 <img
                     onLoad={onLoad}
                     className={`w-full rounded-lg group-hover:opacity-30 h-full object-cover transition-all ${loading ? "opacity-0" : ""}`}
-                    src={post.media && `/api/uploads/${post.media}`}
+                    src={post.media && `${filePath}/${post.media}`}
                     alt={`post ${index + 1}`}
                 />
             )}

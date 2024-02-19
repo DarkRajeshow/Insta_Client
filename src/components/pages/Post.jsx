@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner";
@@ -23,6 +22,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import isLoggedIn from '../../utility/isLoggedIn'
 import SmartLoader from "../reusable/SmartLoader";
 import { Context } from '../../context/Store'
+import api from "../../assets/api";
+import filePath from "../../assets/filePath";
+
 
 export default function Post() {
 
@@ -45,7 +47,7 @@ export default function Post() {
 
   const fetchPost = useCallback(async () => {
     try {
-      const { data } = await axios.get(`/api/posts/${id}`);
+      const { data } = await api.get(`/api/posts/${id}`);
 
       if (data.success) {
         setPost(data.post);
@@ -65,7 +67,7 @@ export default function Post() {
   const showComments = async () => {
 
     try {
-      const { data } = await axios.get(`/api/comments/${id}`);
+      const { data } = await api.get(`/api/comments/${id}`);
 
       if (data.success) {
         setComments(data.comments);
@@ -95,7 +97,7 @@ export default function Post() {
     const text = commentData.get("text");
 
     try {
-      const { data } = await axios.post(`/api/comments/${id}`, {
+      const { data } = await api.post(`/api/comments/${id}`, {
         text: text
       });
 
@@ -182,10 +184,10 @@ export default function Post() {
                     controls={hoverVideo}
                     playsInline
                   >
-                    <source src={post.media && `/api/uploads/${post.media}`} type="video/mp4" />
+                    <source src={post.media && `${filePath}/${post.media}`} type="video/mp4" />
                   </video>
                   :
-                  <img onLoad={() => { setLoading(false) }} src={post.media && `/api/uploads/${post.media}`} className={`aspect-[1/1.2] object-cover w-full h-ful opacity-80 ${loading ? "hidden" : ""}`} alt={post.media} />
+                  <img onLoad={() => { setLoading(false) }} src={post.media && `${filePath}/${post.media}`} className={`aspect-[1/1.2] object-cover w-full h-ful opacity-80 ${loading ? "hidden" : ""}`} alt={post.media} />
               }
               {loading && (
                 <Skeleton className="h-full w-full rounded-lg aspect-[1/1.2]" />
@@ -195,7 +197,7 @@ export default function Post() {
                 <p className="text-light text-lg mt-2 pl-2">{post.caption}.</p>
               </div>
               <Link to={`/user/${post.author.username}`} className="autho bottom-0 py-3 pl-2 flex gap-2" >
-                <img src={`/api/uploads/${post.author.dp}`} className="h-10 w-10 rounded-full" alt={post.author.name} />
+                <img src={`${filePath}/${post.author.dp}`} className="h-10 w-10 rounded-full" alt={post.author.name} />
                 <div className="flex flex-col text-light">
                   <h3 className="text-sm font-semibold">{post.author.name}</h3>
                   <p className="text-sm font-semibold">@{post.author.username}</p>
@@ -252,7 +254,7 @@ export default function Post() {
               </svg>
             </div>
 
-            <a href={`/api/uploads/${post.media}`} className='download flex items-center flex-col justify-center' download
+            <a href={`${filePath}/${post.media}`} className='download flex items-center flex-col justify-center' download
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -287,7 +289,7 @@ export default function Post() {
                 (!commentsLoading && comments.length !== 0) && <div className="p-1 flex flex-col gap-2">
                   {comments.map((comment) => (
                     <div className="follow bottom-0 py-3 pl-2 flex gap-2 hover:bg-zinc-800 bg-zinc-800/50 rounded-lg group" key={comment._id}>
-                      <img src={`/api/uploads/${comment.author.dp}`} className="h-8 w-8 rounded-full" alt={comment.author.name} />
+                      <img src={`${filePath}/${comment.author.dp}`} className="h-8 w-8 rounded-full" alt={comment.author.name} />
                       <div className="text-light flex justify-between w-full pr-2">
                         <div className="text-left">
                           <Link to={`/user/${comment.author.username}`} className=" hover:text-blue-300 text-sm text-zinc-300">{comment.author.username}</Link>

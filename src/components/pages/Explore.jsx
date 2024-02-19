@@ -1,10 +1,10 @@
-import axios from "axios";
 import { useCallback, useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Cookies from "js-cookie";
 import { Skeleton } from "../ui/skeleton";
 import ExplorePost from "../reusable/ExplorePost";
+import api from "../../assets/api";
 
 export default function Explore() {
 
@@ -20,7 +20,7 @@ export default function Explore() {
 
     const fetchExplorePosts = useCallback(async () => {
         try {
-            const { data } = await axios.get(`/api/posts/explore/${offset}`);
+            const { data } = await api.get(`/api/posts/explore/${offset}`);
 
             if (data.success) {
                 if (data.explore.length === 0) {
@@ -51,7 +51,7 @@ export default function Explore() {
             return;
         }
         try {
-            const { data } = await axios.get(`/api/posts/search?query=${searchQuery}`);
+            const { data } = await api.get(`/api/posts/search?query=${searchQuery}`);
             if (data.success) {
                 setExplorePosts(data.explore);
                 setHasMore(false);

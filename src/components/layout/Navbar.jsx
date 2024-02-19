@@ -1,9 +1,9 @@
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import PropTypes from 'prop-types';
+import api from "../../assets/api";
 
 export default function Navbar({ notShowNav }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function Navbar({ notShowNav }) {
     const logOut = async () => {
         try {
             Cookies.remove("userId");
-            const { data } = await axios.get("/api/logout");
+            const { data } = await api.get("/api/logout");
 
             if (data.success) {
                 toast.success(data.status)

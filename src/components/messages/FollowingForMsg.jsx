@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { Context } from "../../context/Store";
 import PropTypes from 'prop-types';
+import filePath from "../../assets/filePath";
 
 let FollowingForMsg = ({ setCollapse }) => {
 
@@ -51,7 +52,7 @@ let FollowingForMsg = ({ setCollapse }) => {
                   await setCollapse(true);
                 }
               }} className={`cursor-pointer follow bottom-0 py-3 pl-2 flex items-center gap-2 hover:bg-zinc-700/50 rounded-lg transition-all ${selectedUserForChat && selectedUserForChat.username === user.username && "bg-zinc-700/40"} "`} key={user._id}>
-                <img src={`/api/uploads/${user.dp}`} className="h-10 w-10 rounded-full" alt={user.name} />
+                <img src={`${filePath}/${user.dp}`} className="h-10 w-10 rounded-full" alt={user.name} />
                 <div className="flex flex-col text-light/90">
                   <h3 className="text-sm text-zinc-300">{user.name}</h3>
                   <p className="text-xs">{user.bio}</p>

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner';
@@ -10,6 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Context } from '../../context/Store';
+import api from '../../assets/api';
 
 const Signup = () => {
 
@@ -42,7 +42,7 @@ const Signup = () => {
         const userData = { name, email, username, password, gender };
 
         try {
-            const { data } = await axios.post("/api/register", userData);
+            const { data } = await api.post("/api/register", userData, { withCredentials: true });
             if (data.success) {
                 setLoading(false);
                 toast.success(data.status);

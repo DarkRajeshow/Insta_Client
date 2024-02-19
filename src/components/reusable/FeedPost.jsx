@@ -3,11 +3,12 @@ import { memo, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from '../ui/skeleton'
 import PropTypes from 'prop-types';
-import axios from "axios";
 import { toast } from "sonner";
 import isLoggedIn from "../../utility/isLoggedIn";
 import SmartLoader from "./SmartLoader";
 import { Context } from "../../context/Store";
+import api from "../../assets/api";
+import filePath from "../../assets/filePath";
 
 const handleIntersection = (entries) => {
     entries.forEach(entry => {
@@ -46,7 +47,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
 
     const fetchPost = async () => {
         try {
-            const { data } = await axios.get(`/api/posts/${postId}`);
+            const { data } = await api.get(`/api/posts/${postId}`);
 
             if (data.success) {
                 setPost(data.post);
@@ -62,7 +63,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const fetchComments = async () => {
 
         try {
-            const { data } = await axios.get(`/api/comments/${postId}`);
+            const { data } = await api.get(`/api/comments/${postId}`);
             if (data.success) {
                 setComments(data.comments);
             }
@@ -94,7 +95,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
         const text = commentData.get("text");
 
         try {
-            const { data } = await axios.post(`/api/comments/${postId}`, {
+            const { data } = await api.post(`/api/comments/${postId}`, {
                 text: text
             });
 
@@ -150,7 +151,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                     <div className="w-10 h-10 bg-sky-100 rounded-full">
                         <img
                             className="h-full w-full aspect-square rounded-full object-cover"
-                            src={`/api/uploads/${post.author.dp}`}
+                            src={`${filePath}/${post.author.dp}`}
                             alt={`${post.author.name}`}
                         />
                     </div>
@@ -202,10 +203,10 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                             controls={hoverVideo}
                             playsInline
                         >
-                            <source src={post.media && `/api/uploads/${post.media}`} type="video/mp4" />
+                            <source src={post.media && `${filePath}/${post.media}`} type="video/mp4" />
                         </video>
                         :
-                        <img onLoad={() => { setLoading(false) }} src={post.media && `/api/uploads/${post.media}`} className={`aspect-[1/1.2] object-cover h-full w-full ${loading ? "hidden" : ""}`} alt={post.media} />
+                        <img onLoad={() => { setLoading(false) }} src={post.media && `${filePath}/${post.media}`} className={`aspect-[1/1.2] object-cover h-full w-full ${loading ? "hidden" : ""}`} alt={post.media} />
                 }
                 {loading && (
                     <Skeleton className="h-full w-full aspect-[1/1.2]" />
@@ -265,7 +266,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                                 (!commentsLoading && comments.length !== 0) && <div className="p-1 flex flex-col gap-2">
                                     {comments.map((comment) => (
                                         <div className="follow bottom-0 py-3 pl-2 flex gap-2 hover:bg-zinc-800 bg-zinc-800/50 rounded-lg group" key={comment._id}>
-                                            <img src={`/api/uploads/${comment.author.dp}`} className="h-8 w-8 rounded-full" alt={comment.author.name} />
+                                            <img src={`${filePath}/${comment.author.dp}`} className="h-8 w-8 rounded-full" alt={comment.author.name} />
                                             <div className="text-light flex justify-between w-full pr-2">
                                                 <div className="text-left">
                                                     <Link to={`/user/${comment.author.username}`} className=" hover:text-blue-300 text-sm text-zinc-300">{comment.author.username}</Link>

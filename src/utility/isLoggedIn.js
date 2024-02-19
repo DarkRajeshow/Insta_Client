@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/assets/api";
 import Cookies from "js-cookie";
 
 const isLoggedIn = async () => {
@@ -10,7 +10,7 @@ const isLoggedIn = async () => {
     }
 
     else {
-        const { data } = await axios.get("/api/isloggedin");
+        const { data } = await api.get("/api/isloggedin");
         console.log(data.success);
         if (!data.success) {
             return false;

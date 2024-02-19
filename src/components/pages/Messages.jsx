@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import FollowingForMsg from '../messages/FollowingForMsg';
 import Chat from '../messages/Chat';
@@ -11,6 +10,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import api from '../../assets/api';
 
 export default function Messages() {
     const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function Messages() {
 
     const saveMessage = useCallback(async (messageData) => {
         try {
-            const { data } = await axios.put(`/api/messages/save`, messageData);
+            const { data } = await api.put(`/api/messages/save`, messageData);
             if (!data.success) {
                 console.log(data.status);
             }
@@ -36,7 +36,7 @@ export default function Messages() {
             return;
         }
         try {
-            const { data } = await axios.get("/api/user/following");
+            const { data } = await api.get("/api/user/following");
             if (data.success) {
                 setUserWithFollowing(data.user);
             }
@@ -49,7 +49,7 @@ export default function Messages() {
     const fetchMessagesFromDB = useCallback(async () => {
         if (selectedUserForChat && currentLyLoggedUser) {
             try {
-                const { data } = await axios.get(`/api/messages/${selectedUserForChat._id}`);
+                const { data } = await api.get(`/api/messages/${selectedUserForChat._id}`);
                 if (data.success) setMessages(data.messages);
             } catch (error) {
                 console.error('Error fetching messages:', error);

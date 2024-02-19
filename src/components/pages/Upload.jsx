@@ -1,9 +1,10 @@
-import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Plus, X } from 'lucide-react';
 import { Context } from '../../context/Store'
+import api from '../../assets/api';
+
 
 const Upload = () => {
 
@@ -105,7 +106,7 @@ const Upload = () => {
 
     try {
       if (formData.get("file")) {
-        const { data } = await axios.post("/api/upload", formData);
+        const { data } = await api.post("/api/upload", formData);
 
         if (data.success) {
           toast.success(data.status)
@@ -131,7 +132,7 @@ const Upload = () => {
     }
     else {
       try {
-        const { data } = await axios.get("/api/user");
+        const { data } = await api.get("/api/user");
         console.log(data);
         if (data.success) {
           setLoggedUserData(data.user);

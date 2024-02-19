@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
@@ -13,6 +12,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import UserInfo from '../reusable/UserInfo';
+import api from '../../assets/api';
+import filePath from '../../assets/filePath';
+
 
 const Username = () => {
 
@@ -52,7 +54,7 @@ const Username = () => {
     const fetchWithUsername = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`/api/username?username=${username}`);
+            const { data } = await api.get(`/api/username?username=${username}`);
 
             if (data.success) {
                 setUser(data.user)
@@ -77,7 +79,7 @@ const Username = () => {
         }
 
         try {
-            const { data } = await axios.put(`/api/toggle-follow`, { userIdToFollow: user._id });
+            const { data } = await api.put(`/api/toggle-follow`, { userIdToFollow: user._id });
 
             console.log(data);
             if (data.success) {
@@ -98,7 +100,7 @@ const Username = () => {
         setFollowLoading(true);
 
         try {
-            const { data } = await axios.get(`/api/following/${user._id}`);
+            const { data } = await api.get(`/api/following/${user._id}`);
 
             if (data.success) {
                 setFollowData(data.users)
@@ -120,7 +122,7 @@ const Username = () => {
         setFollowLoading(true);
 
         try {
-            const { data } = await axios.get(`/api/followers/${user._id}`);
+            const { data } = await api.get(`/api/followers/${user._id}`);
 
             if (data.success) {
                 setFollowData(data.users)
@@ -191,7 +193,7 @@ const Username = () => {
                     <div className="w-[12vw] h-[12vw] bg-sky-100 rounded-full">
                         <img
                             className="h-full w-full border border-light object-cover rounded-full"
-                            src={user.dp ? `/api/uploads/${user.dp}` : ""}
+                            src={user.dp ? `${filePath}/${user.dp}` : ""}
                             alt={`${user.username}'s profile picture`}
                         />
                     </div>

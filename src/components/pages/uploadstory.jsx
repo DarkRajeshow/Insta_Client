@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import api from '../../assets/api';
 
 
 const UploadStory = () => {
@@ -62,7 +62,7 @@ const UploadStory = () => {
 
     try {
       if (formData.get("file")) {
-        const { data } = await axios.post("/api/uploadstory", formData);
+        const { data } = await api.post("/api/uploadstory", formData);
         if (data.success) {
           setLoading(false);
           toast.success(data.status)

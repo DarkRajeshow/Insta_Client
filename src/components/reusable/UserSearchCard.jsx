@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FollowButton from './FollowButton';
+import filePath from '../../assets/filePath';
 
 export default function UserSearchCard({ user }) {
 
@@ -14,7 +15,7 @@ export default function UserSearchCard({ user }) {
                     <div className="image w-[60px] h-[60px] rounded-full bg-sky-100 border border-zinc-600">
                         <img
                             className="h-full w-full object-cover rounded-full"
-                            src={`/api/uploads/${user.dp}`}
+                            src={`${filePath}/${user.dp}`}
                             alt={`${user.username}'s profile picture`}
                         />
                     </div>
