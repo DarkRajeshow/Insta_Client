@@ -30,7 +30,12 @@ const Signup = () => {
 
         // can you add the password rules such as it should be 6 char or more and it must contains a special char
 
-        const passwordRegex = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/; // This regex ensures password has at least 6 characters and contains at least one special character
+        // const passwordRegex = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/; 
+        // This regex ensures password has at least 6 characters and contains at least one special character
+
+        //this will only check if the password is more than 6 chars long.
+        const passwordRegex = /^.{6,}$/;
+
         const isPasswordValid = passwordRegex.test(password);
 
         if (!isPasswordValid) {
