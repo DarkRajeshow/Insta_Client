@@ -39,7 +39,7 @@ const Signup = () => {
         const isPasswordValid = passwordRegex.test(password);
 
         if (!isPasswordValid) {
-            toast.warning("Password must be 6+ characters long and contain a special character like !@#$%^&*")
+            toast.warning("Password should be 5+ characters.")
             setLoading(false);
             return;
         }

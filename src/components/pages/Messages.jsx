@@ -125,10 +125,6 @@ export default function Messages() {
     }, [currentLyLoggedUser, selectedUserForChat, messageInput, saveMessage, fetchMessagesFromDB, setMessageInput, socket]);
     
 
-    useEffect(() => {
-        setSelectedUserForChat(null);
-    }, [userWithFollowing, setSelectedUserForChat])
-
     return (
         <main className='h-[88vh] sm:h-[85vh] px-6 gap-0.5 flex' >
             {loading && <SmartLoader className='h-[85vh] absolute w-full bg-zinc-900 ' />}
