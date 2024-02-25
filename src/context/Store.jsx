@@ -15,7 +15,7 @@ export const StoreProvider = ({ children }) => {
     //messages 
     const [socket, setSocket] = useState(null);
     const [loggedUserData, setLoggedUserData] = useState(null);
-    const [userWithFollowing, setUserWithFollowing] = useState(null);
+    const [recentChatUsers, setRecentChatUsers] = useState(null);
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState("");
     const [selectedUserForChat, setSelectedUserForChat] = useState(null);
@@ -206,8 +206,8 @@ export const StoreProvider = ({ children }) => {
             selectedUserForChat,
             setSelectedUserForChat,
             toggleFollow,
-            userWithFollowing,
-            setUserWithFollowing,
+            recentChatUsers,
+            setRecentChatUsers,
             messageLoading,
             setMessageLoading
         }}>

@@ -9,6 +9,7 @@ import SmartLoader from "./SmartLoader";
 import { Context } from "../../context/Store";
 import api from "../../assets/api";
 import filePath from "../../assets/filePath";
+import { motion } from "framer-motion";
 
 const handleIntersection = (entries) => {
     entries.forEach(entry => {
@@ -33,7 +34,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const [commentsLoading, setCommentsLoading] = useState(true);
     const [postLoading, setPostLoading] = useState(false);
     const [showComments, setShowComments] = useState(false);
-
+    const [animateLike, setAnimateLike] = useState(false)
     const [toggleFollowLoading, setToggleFollowLoading] = useState(false);
 
     const { likePost, share, savePost, deleteComment, likeComment } = useContext(Context);
@@ -123,7 +124,17 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
         setPostLoading(false);
     }
 
+    const handelAnimateLike = () => {
+        setAnimateLike(true);
+        setTimeout(() => {
+            setAnimateLike(false)
+        }, 1200)
+    }
 
+
+    useEffect(() => {
+        console.log(animateLike);
+    }, [animateLike])
 
 
     useEffect(() => {
@@ -181,7 +192,10 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                 </button>
             </div>
 
-            <div className="w-full aspect-square mt-4 bg-sky-100">
+            <div className="w-full aspect-square mt-4 bg-sky-100 relative" onDoubleClick={async () => {
+                await likePost(postId, fetchPost);
+                handelAnimateLike();
+            }}>
                 {
                     post.type === "video" ?
                         <video
@@ -211,10 +225,36 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                 {loading && (
                     <Skeleton className="h-full w-full aspect-[1/1.2]" />
                 )}
+                <motion.div
+                    initial={{
+                        opacity: 0
+                    }}
+                    animate={{
+                        opacity: animateLike ? 1 : 0
+                    }}
+                    transition={{
+                        duration: 0.15,
+                        type: "just"
+                    }}
+                >
+                    {currentlyLoggedUser && post.likes.includes(currentlyLoggedUser) ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor" className="ri-heart-3-fill h-20 w-20 text-red-500 absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="ri-heart-3-fill h-20 w-20 text-red-50 absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+                    )}
+                </motion.div>
             </div>
             <div className="options w-full px-4 flex justify-between items-center text-[1.4rem]">
                 <div className="flex gap-3 mt-2">
-                    <div className="cursor-pointer" onClick={likePost.bind(this, postId, fetchPost)}>
+                    <div className="cursor-pointer" onClick={async () => {
+                        await likePost(postId, fetchPost);
+                        handelAnimateLike();
+                    }}>
                         {currentlyLoggedUser && post.likes.includes(currentlyLoggedUser) ? (
                             <i className="ri-heart-3-fill text-red-500"></i>
                         ) : (

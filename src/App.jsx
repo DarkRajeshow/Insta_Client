@@ -20,6 +20,9 @@ import Liked from './components/pages/Liked';
 import UploadStory from './components/pages/uploadstory';
 import Saved from './components/pages/Saved';
 import Footer from './components/layout/Footer';
+import { useContext, useEffect } from 'react';
+import { io } from 'socket.io-client';
+import { Context } from './context/Store';
 
 
 function App() {
@@ -41,6 +44,15 @@ function App() {
   ];
 
   const notShowNav = notShowNavPaths.some(path => location.pathname.includes(path));
+
+  const { setSocket } = useContext(Context);
+
+  useEffect(() => {
+    const memoizedSocket = io(import.meta.env.VITE_REACT_APP_SERVER_URL);
+    setSocket(memoizedSocket);
+
+    return () => memoizedSocket.close();
+  }, [setSocket]);
 
   return (
     <main>

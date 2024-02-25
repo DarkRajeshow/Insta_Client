@@ -199,15 +199,15 @@ const Edit = () => {
                         />
                     </div>
 
-                    <button disabled={loading} className={`w-full px-2 py-2 bg-blue-500 rounded-md flex items-center justify-center gap-4 ${loading ? "cursor-default bg-gray-700" : ""}`} type="submit">
+                    <button disabled={loading} className={`w-full px-2 py-2 bg-blue-500 hover:bg-blue-600 rounded-md flex items-center justify-center gap-4 ${loading ? "cursor-default bg-gray-700" : ""}`} type="submit">
                         {
                             loading && <span className='h-6 w-6 rounded-full border-[3px] border-white border-b-transparent animate-spin' />
                         }
                         <span>Update Profile</span>
                     </button>
                 </form>
-                <p className="text-gray-200 font-medium text-center my-2 text-sm sm:text-base">
-                    <strong className="font-semibold text-gray-50 underline underline-offset-4">
+                <p className="text-gray-500 font-medium text-center my-2 text-sm sm:text-base">
+                    <strong className="font-semibold text-light underline underline-offset-4">
                         Note
                     </strong>{' '}
                     : If you change your username, you will need to log in again using

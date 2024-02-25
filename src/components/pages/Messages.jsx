@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
-import FollowingForMsg from '../messages/FollowingForMsg';
+import RecentChats from '../messages/RecentChats';
 import Chat from '../messages/Chat';
 import SmartLoader from '../reusable/SmartLoader';
 import { Context } from '../../context/Store';
@@ -16,7 +15,7 @@ export default function Messages() {
     const [loading, setLoading] = useState(true);
     const [collapse, setCollapse] = useState(false);
 
-    const { socket, setSocket, messages, setMessages, setSelectedUserForChat, userWithFollowing, setUserWithFollowing, messageInput, setMessageInput, selectedUserForChat, setMessageLoading } = useContext(Context);
+    const { socket, messages, setMessages, setSelectedUserForChat, recentChatUsers, setRecentChatUsers, messageInput, setMessageInput, selectedUserForChat, setMessageLoading } = useContext(Context);
     const currentLyLoggedUser = Cookies.get("userId");
 
     const saveMessage = useCallback(async (messageData) => {
@@ -25,26 +24,29 @@ export default function Messages() {
             if (!data.success) {
                 console.log(data.status);
             }
+            else{
+                await fetchRecentChats();
+            }
         } catch (error) {
             console.error(`Error saving message:`, error);
         }
     }, []);
 
-    const fetchLoggedUser = useCallback(async () => {
+    const fetchRecentChats = useCallback(async () => {
         if (!currentLyLoggedUser) {
             setLoading(false);
             return;
         }
         try {
-            const { data } = await api.get("/api/user/following");
+            const { data } = await api.get("/api/user/recentchats");
             if (data.success) {
-                setUserWithFollowing(data.user);
+                setRecentChatUsers(data.recentChats);
             }
         } catch (error) {
             console.error('Error fetching logged user:', error);
         }
         setLoading(false);
-    }, [currentLyLoggedUser, setUserWithFollowing]);
+    }, [currentLyLoggedUser, setRecentChatUsers]);
 
     const fetchMessagesFromDB = useCallback(async () => {
         if (selectedUserForChat && currentLyLoggedUser) {
@@ -64,15 +66,8 @@ export default function Messages() {
     }, [fetchMessagesFromDB, setMessageLoading]);
 
     useEffect(() => {
-        fetchLoggedUser();
-    }, [fetchLoggedUser]);
-
-    useEffect(() => {
-        const memoizedSocket = io('http://localhost:8080');
-        setSocket(memoizedSocket);
-
-        return () => memoizedSocket.close();
-    }, [setSocket]);
+        fetchRecentChats();
+    }, [fetchRecentChats]);
 
     useEffect(() => {
         fetchInitialMessages();
@@ -93,6 +88,7 @@ export default function Messages() {
     }, [setSelectedUserForChat]);
 
     useEffect(() => {
+        console.log(socket);
         if (socket) {
             socket.on('connect', async () => {
                 console.log("connected");
@@ -105,9 +101,10 @@ export default function Messages() {
 
             socket.on('receive_message', async () => {
                 await fetchMessagesFromDB();
+                await fetchRecentChats();
             });
         }
-    }, [socket, currentLyLoggedUser, saveMessage, fetchMessagesFromDB]);
+    }, [socket, currentLyLoggedUser, saveMessage, fetchMessagesFromDB, fetchRecentChats]);
 
 
     const sendMessage = useCallback(async (e) => {
@@ -130,31 +127,31 @@ export default function Messages() {
             {loading && <SmartLoader className='h-[85vh] absolute w-full bg-zinc-900 ' />}
 
             {!loading && <>
-                <div className='sm:block hidden w-full'>
+                <div className='md:block hidden w-full'>
                     <ResizablePanelGroup className="transition-none flex-col gap-1" direction="horizontal">
                         <ResizablePanel className="transition-none">
                             <div className={`bg-[#1E1E21] h-full rounded-lg overflow-hidden`}>
-                                {userWithFollowing && <FollowingForMsg setCollapse={setCollapse} />}
+                                {recentChatUsers && <RecentChats setCollapse={setCollapse} />}
                             </div>
                         </ResizablePanel>
                         <ResizableHandle className="bg-zinc-800 transition-none" withHandle />
                         <ResizablePanel className="chat bg-zinc-800/20 rounded-lg w-full">
-                            {userWithFollowing && messages && <Chat sendMessage={sendMessage} />}
+                            {recentChatUsers && messages && <Chat sendMessage={sendMessage} />}
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </div>
-                <div className='flex flex-col w-full relative sm:hidden'>
+                <div className='flex flex-col w-full relative md:hidden'>
                     <div className='w-[40px] my-2'>
                         <button onClick={() => setCollapse(!collapse)} className={`hover:bg-zinc-700/40 right-2 top-4 px-2 rounded-sm text-muted text-lg cursor-pointer ${collapse && "bg-zinc-700/50"}`}>
                             <i className="ri-menu-fold-line"></i>
                         </button>
                     </div>
                     <div className='relative w-full h-full'>
-                        <div className={`absolute z-40 md:left-0 md:relative following bg-[#1E1E21] rounded-lg ${!collapse ? "w-full h-full" : "w-0"} overflow-hidden`}>
-                            {userWithFollowing && <FollowingForMsg setCollapse={setCollapse} />}
+                        <div className={`absolute z-40 md:left-0 md:relative following bg-[#1E1E21] rounded-lg h-full ${!collapse ? "w-full" : "w-0"} overflow-hidden`}>
+                            {recentChatUsers && <RecentChats setCollapse={setCollapse} />}
                         </div>
                         <div className={`chat bg-zinc-800/20 rounded-lg w-full h-full`}>
-                            {userWithFollowing && messages && <Chat sendMessage={sendMessage} />}
+                            {recentChatUsers && messages && <Chat sendMessage={sendMessage} />}
                         </div>
                     </div>
                 </div>
