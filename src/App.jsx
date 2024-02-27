@@ -54,6 +54,8 @@ function App() {
     return () => memoizedSocket.close();
   }, [setSocket]);
 
+
+
   return (
     <main>
       <Toaster richColors position="top-center" theme='dark' />

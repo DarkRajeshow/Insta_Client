@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import isLoggedIn from '@/utility/isLoggedIn';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '@/assets/api';
+import { likeCommentAPI, likePostAPI, toggleFollowAPI, deleteCommentAPI, deletePostAPI, savePostAPI } from '../utility/apiUtils'
 
 export const Context = createContext();
 
@@ -11,6 +11,7 @@ export const StoreProvider = ({ children }) => {
     const navigate = useNavigate();
     const [loggedUser, setLoggedUser] = useState(null);
     const location = useLocation();
+
 
     //messages 
     const [socket, setSocket] = useState(null);
@@ -20,7 +21,8 @@ export const StoreProvider = ({ children }) => {
     const [messageInput, setMessageInput] = useState("");
     const [selectedUserForChat, setSelectedUserForChat] = useState(null);
     const [messageLoading, setMessageLoading] = useState(false);
-
+    const [userInMessageView, setUserInMessageView] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
     const likePost = async (postId, reFetchPost) => {
         const isUserLogged = await isLoggedIn();
@@ -30,8 +32,7 @@ export const StoreProvider = ({ children }) => {
         }
         else {
             try {
-                console.log(postId);
-                const { data } = await api.put(`/api/like`, { postId });
+                const { data } = await likePostAPI(postId)
                 console.log(data);
                 if (data.success) {
                     toast.success(data.status);
@@ -56,7 +57,9 @@ export const StoreProvider = ({ children }) => {
         }
         else {
             try {
-                const { data } = await api.put(`/api/comments/like`, { commentId: commentId });
+                const { data } = await likeCommentAPI(commentId);
+
+                console.log(data);
                 if (data.success) {
                     toast.success(data.status);
                     await reloadComments();
@@ -74,7 +77,7 @@ export const StoreProvider = ({ children }) => {
 
     const deletePost = async (postId) => {
         try {
-            const { data } = await api.delete(`/api/posts/${postId}`);
+            const { data } = await deletePostAPI(postId);
             if (data.success) {
                 toast.success(data.status);
                 navigate("/profile");
@@ -108,7 +111,7 @@ export const StoreProvider = ({ children }) => {
 
     const deleteComment = async (commentId, showComments, fetchPost) => {
         try {
-            const { data } = await api.delete(`/api/comments/${commentId}`);
+            const { data } = await deleteCommentAPI(commentId);
 
             if (data.success) {
                 toast.success(data.status);
@@ -136,7 +139,7 @@ export const StoreProvider = ({ children }) => {
 
         else {
             try {
-                const { data } = await api.put(`/api/save`, { postId });
+                const { data } = await savePostAPI(postId);
                 console.log(data);
                 if (data.success) {
                     toast.success(data.status);
@@ -156,14 +159,9 @@ export const StoreProvider = ({ children }) => {
 
 
     const toggleFollow = async (userIdToFollow) => {
-        // if (!loggedUserData) {
-        //     toast.error("Login to continue");
-        //     navigate(`/login?callback=${location.pathname}`)
-        //     return;
-        // }
 
         try {
-            const { data } = await api.put(`/api/toggle-follow`, { userIdToFollow });
+            const { data } = await toggleFollowAPI(userIdToFollow);
 
             if (data.success) {
                 toast.success(data.status);
@@ -209,7 +207,11 @@ export const StoreProvider = ({ children }) => {
             recentChatUsers,
             setRecentChatUsers,
             messageLoading,
-            setMessageLoading
+            setMessageLoading,
+            userInMessageView,
+            setUserInMessageView,
+            notifications,
+            setNotifications
         }}>
             <div>{children}</div>
         </Context.Provider>

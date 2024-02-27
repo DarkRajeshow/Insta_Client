@@ -15,7 +15,7 @@ export default function Messages() {
     const [loading, setLoading] = useState(true);
     const [collapse, setCollapse] = useState(false);
 
-    const { socket, messages, setMessages, setSelectedUserForChat, recentChatUsers, setRecentChatUsers, messageInput, setMessageInput, selectedUserForChat, setMessageLoading } = useContext(Context);
+    const { socket, messages, setMessages, setSelectedUserForChat, recentChatUsers, setRecentChatUsers, messageInput, setMessageInput, selectedUserForChat, setMessageLoading, setUserInMessageView } = useContext(Context);
     const currentLyLoggedUser = Cookies.get("userId");
 
     const saveMessage = useCallback(async (messageData) => {
@@ -88,15 +88,9 @@ export default function Messages() {
     }, [setSelectedUserForChat]);
 
     useEffect(() => {
-        console.log(socket);
         if (socket) {
             socket.on('connect', async () => {
-                console.log("connected");
                 await socket.emit("join_room", currentLyLoggedUser);
-            });
-
-            socket.on('joined', (msg) => {
-                console.log(msg);
             });
 
             socket.on('receive_message', async () => {
@@ -121,6 +115,15 @@ export default function Messages() {
         setMessageInput("");
     }, [currentLyLoggedUser, selectedUserForChat, messageInput, saveMessage, fetchMessagesFromDB, setMessageInput, socket]);
     
+    useEffect(() => {
+        // Set user in view when component mounts
+        setUserInMessageView(true);
+
+        // Clean up when component unmounts
+        return () => {
+            setUserInMessageView(false);
+        };
+    }, []);
 
     return (
         <main className='h-[88vh] sm:h-[85vh] px-6 gap-0.5 flex' >
