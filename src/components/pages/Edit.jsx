@@ -8,8 +8,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import api from "../../assets/api";
 import filePath from "../../assets/filePath";
+import { getUserAPI, updateUserDataAPI } from '../../utility/apiUtils'
 
 
 const Edit = () => {
@@ -33,7 +33,7 @@ const Edit = () => {
 
     const fetchUserData = async () => {
         try {
-            const { data } = await api.get("/api/user");
+            const { data } = await getUserAPI();
             if (data.success) {
                 setUser(data.user);
             }
@@ -67,13 +67,13 @@ const Edit = () => {
         })
     }
 
-    const updateData = async (e) => {
+    const updateUserData = async (e) => {
         setLoading(true);
         e.preventDefault();
         const formData = new FormData(e.target);
 
         try {
-            const { data } = await api.put("/api/user", formData);
+            const { data } = await updateUserDataAPI(formData);
             if (data.success) {
                 toast.success(data.status)
                 navigate("/profile");
@@ -122,7 +122,7 @@ const Edit = () => {
                 </h3>
                 <hr className="opacity-30 my-3" />
                 <form
-                    onSubmit={updateData}
+                    onSubmit={updateUserData}
                     className="w-full"
                     encType="multipart/form-data"
                 >

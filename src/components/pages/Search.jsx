@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import UserSearchCard from '../reusable/UserSearchCard';
-import api from '../../assets/api';
+import { searchUsersAPI } from '../../utility/apiUtils';
 
 const Search = () => {
     const [searchResults, setSearchResults] = useState([]);
@@ -9,7 +9,7 @@ const Search = () => {
     const [query, setQuery] = useState("");
 
 
-    const searchUser = async (event) => {
+    const searchUsers = async (event) => {
         setLoading(true);
         setQuery(event.target.value)
 
@@ -20,10 +20,9 @@ const Search = () => {
         }
 
 
-
         if (query !== "") {
             try {
-                const { data } = await api.get(`/api/search/${query}`);
+                const { data } = await searchUsersAPI(query);
                 if (data.success) {
                     setSearchResults(data.users);
                 }
@@ -47,7 +46,7 @@ const Search = () => {
                     <i className="text-white ri-search-line text-2xl"></i>
                     <input
                         value={query}
-                        onInput={searchUser}
+                        onInput={searchUsers}
                         autoCapitalize="false"
                         autoComplete="off"
                         id="searchInput"

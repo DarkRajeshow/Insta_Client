@@ -1,56 +1,68 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 import SmartLoader from "../reusable/SmartLoader";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import FeedPost from "../reusable/FeedPost";
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import api from '../../assets/api'
+import { feedPostsAPI, getUserId, toggleFollowAPI } from "../../utility/apiUtils";
 
 export default function Home() {
 
   const [feedPosts, setFeedPosts] = useState([]);
   const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true)
-  const currentlyLoggedUser = Cookies.get("userId");
+  const [hasMore, setHasMore] = useState(true);
+
+  const [userId, setUserId] = useState(false);
+
+  const findUserId = async () => {
+    const userIdStatus = await getUserId();
+    setUserId(userIdStatus)
+  }
+
+  useEffect(() => {
+    findUserId();
+  }, [])
+
 
   // it contains all the users following status 
   const [following, setFollowing] = useState({});
   const navigate = useNavigate();
 
 
-  const fetchFeedPosts = async () => {
+  const fetchFeedPosts = useCallback(
+    async () => {
+      try {
+        const { data } = await feedPostsAPI(offset);
 
-    try {
-      const { data } = await api.get(`/api/feed/${offset}`);
+        if (data.success) {
+          if (data.feed.length === 0) {
+            setHasMore(false);
+          }
+          else {
+            setFeedPosts([...feedPosts, ...data.feed]);
+            setOffset(offset + 1);
+          }
+        } else {
+          toast.error(data.status);
+        }
 
-      if (data.success) {
-        if (data.feed.length === 0) {
-          setHasMore(false);
-        }
-        else {
-          setFeedPosts([...feedPosts, ...data.feed]);
-          setOffset(offset + 1);
-        }
-      } else {
-        toast.error(data.status);
+      } catch (error) {
+        console.error(error);
       }
-
-    } catch (error) {
-      console.error(error);
     }
-  }
+    , [feedPosts, offset]);
+
 
   const toggleFollow = async (userIdToFollow) => {
-    if (!currentlyLoggedUser) {
+    if (!userId) {
       toast.error("Login to continue");
       navigate(`/login?callback=${location.pathname}`)
       return;
     }
 
     try {
-      const { data } = await api.put(`/api/toggle-follow`, { userIdToFollow });
+      const { data } = await toggleFollowAPI(userIdToFollow);
 
       if (data.success) {
         toast.success(data.status);
@@ -71,14 +83,14 @@ export default function Home() {
   useEffect(() => {
     const initialFollowingState = {};
     feedPosts.forEach(post => {
-      initialFollowingState[post.author._id] = post.author.followers.indexOf(currentlyLoggedUser) >= 0;
+      initialFollowingState[post.author._id] = post.author.followers.indexOf(userId) >= 0;
     });
     setFollowing(initialFollowingState);
-  }, [feedPosts, currentlyLoggedUser]);
+  }, [feedPosts, userId]);
 
   useEffect(() => {
     fetchFeedPosts();
-  }, [])
+  }, [fetchFeedPosts])
 
   return (
     <div className="w-full min-h-screen bg-zinc-900 text-white">

@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Context } from '../../context/Store';
-import api from '../../assets/api';
+import { registerAPI } from '../../utility/apiUtils';
 
 const Signup = () => {
 
@@ -28,8 +28,6 @@ const Signup = () => {
         const password = formData.get('password');
         const gender = formData.get('gender');
 
-        // can you add the password rules such as it should be 6 char or more and it must contains a special char
-
         // const passwordRegex = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/; 
         // This regex ensures password has at least 6 characters and contains at least one special character
 
@@ -47,7 +45,7 @@ const Signup = () => {
         const userData = { name, email, username, password, gender };
 
         try {
-            const { data } = await api.post("/api/register", userData, { withCredentials: true });
+            const { data } = await registerAPI(userData);
             if (data.success) {
                 setLoading(false);
                 toast.success(data.status);

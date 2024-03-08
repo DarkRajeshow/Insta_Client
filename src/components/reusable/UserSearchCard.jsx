@@ -1,12 +1,23 @@
-import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FollowButton from './FollowButton';
 import filePath from '../../assets/filePath';
+import { useEffect, useState } from 'react';
+import { getUserId } from '../../utility/apiUtils';
 
 export default function UserSearchCard({ user }) {
 
-    const currentlyLoggedUser = Cookies.get("userId");
+    const [currentlyLoggedUser, setCurrentlyLoggedUser] = useState(false);
+
+    const findUserId = async () => {
+        const currentlyLoggedUserStatus = await getUserId();
+        setCurrentlyLoggedUser(currentlyLoggedUserStatus)
+    }
+
+    useEffect(() => {
+        findUserId();
+    }, [])
+
 
     return (
         <div key={user.username} className="flex items-center justify-between fade-in-5 animate-in p-4 rounded-full bg-zinc-700/15">

@@ -1,23 +1,23 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import PostCard from "../reusable/PostCard";
 import { Skeleton } from "../ui/skeleton";
-import api from "../../assets/api";
+import { savedPostsAPI } from "../../utility/apiUtils";
+import PropTypes from 'prop-types';
 
-export default function Saved() {
+
+export default function Saved({ userId }) {
 
     const [SavedPosts, setSavedPosts] = useState([]);
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
-    const currentlyLoggedUser = Cookies.get("userId");
 
     const fetchSavedPosts = async () => {
         try {
-            const { data } = await api.get(`/api/saved/${offset}`);
+            const { data } = await savedPostsAPI(offset);
 
             console.log(data);
 
@@ -73,7 +73,7 @@ export default function Saved() {
                         )
                     }
                     {SavedPosts.map((post, index) => (
-                        <PostCard post={post} index={index} key={post._id} userId={currentlyLoggedUser} />
+                        <PostCard post={post} index={index} key={post._id} userId={userId} />
                     ))}
                 </InfiniteScroll>
 
@@ -90,3 +90,10 @@ export default function Saved() {
         </div>
     )
 }
+
+Saved.propTypes = {
+    userId: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool,
+    ]).isRequired,
+};

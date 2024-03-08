@@ -2,24 +2,23 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import PostCard from "../reusable/PostCard";
 import { Skeleton } from "../ui/skeleton";
-import api from "../../assets/api";
+import { likedPostsAPI } from "../../utility/apiUtils";
+import PropTypes from 'prop-types';
 
 
-export default function Liked() {
+export default function Liked({ userId }) {
 
     const [likedPosts, setLikedPosts] = useState([]);
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(true);
-    const currentlyLoggedUser = Cookies.get("userId");
 
     const fetchLikedPosts = async () => {
         try {
-            const { data } = await api.get(`/api/liked/${offset}`);
+            const { data } = await likedPostsAPI(offset);
 
             console.log(data);
 
@@ -75,7 +74,7 @@ export default function Liked() {
                         )
                     }
                     {likedPosts.map((post, index) => (
-                        <PostCard post={post} index={index} key={post._id} userId={currentlyLoggedUser} />
+                        <PostCard post={post} index={index} key={post._id} userId={userId} />
                     ))}
                 </InfiniteScroll>
 
@@ -92,3 +91,12 @@ export default function Liked() {
         </div>
     )
 }
+
+
+
+Liked.propTypes = {
+    userId: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool,
+    ]).isRequired,
+};

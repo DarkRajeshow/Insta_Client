@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner";
 import { Context } from "../../context/Store";
-import api from "../../assets/api";
+import { loginAPI } from "../../utility/apiUtils";
 
 const Login = () => {
 
@@ -24,7 +24,7 @@ const Login = () => {
         const userCredentials = { username, password };
 
         try {
-            const { data } = await api.post("/api/login", userCredentials, { withCredentials: true });
+            const { data } = await loginAPI(userCredentials);
 
             if (data.success) {
                 setLoading(false);

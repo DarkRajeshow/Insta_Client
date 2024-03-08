@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Plus, X } from 'lucide-react';
 import { Context } from '../../context/Store'
 import api from '../../assets/api';
+import { uploadPostAPI } from '../../utility/apiUtils';
 
 
 const Upload = () => {
@@ -106,7 +107,7 @@ const Upload = () => {
 
     try {
       if (formData.get("file")) {
-        const { data } = await api.post("/api/upload", formData);
+        const { data } = await uploadPostAPI(formData);
 
         if (data.success) {
           toast.success(data.status)

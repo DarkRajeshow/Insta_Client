@@ -1,15 +1,13 @@
-import Cookies from "js-cookie";
 import { memo, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from '../ui/skeleton'
 import PropTypes from 'prop-types';
 import { toast } from "sonner";
-import isLoggedIn from "../../utility/isLoggedIn";
 import SmartLoader from "./SmartLoader";
 import { Context } from "../../context/Store";
-import api from "../../assets/api";
 import filePath from "../../assets/filePath";
 import { motion } from "framer-motion";
+import { addCommentByPostIdAPI, getCommentsByPostIdAPI, getUserId, postByIdAPI } from "../../utility/apiUtils";
 
 const handleIntersection = (entries) => {
     entries.forEach(entry => {
@@ -26,7 +24,6 @@ const handleIntersection = (entries) => {
 
 function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const postId = initialPost._id;
-    const currentlyLoggedUser = Cookies.get("userId");
     const [loading, setLoading] = useState(false);
     const [hoverVideo, setHoverVideo] = useState(false);
     const [post, setPost] = useState(initialPost);
@@ -36,6 +33,17 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const [showComments, setShowComments] = useState(false);
     const [animateLike, setAnimateLike] = useState(false)
     const [toggleFollowLoading, setToggleFollowLoading] = useState(false);
+
+    const [userId, setUserId] = useState(false);
+
+    const findUserId = async () => {
+        const userIdStatus = await getUserId();
+        setUserId(userIdStatus)
+    }
+
+    useEffect(() => {
+        findUserId();
+    }, [])
 
     const { likePost, share, savePost, deleteComment, likeComment } = useContext(Context);
 
@@ -48,7 +56,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
 
     const fetchPost = async () => {
         try {
-            const { data } = await api.get(`/api/posts/${postId}`);
+            const { data } = await postByIdAPI(postId);
 
             if (data.success) {
                 setPost(data.post);
@@ -64,7 +72,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
     const fetchComments = async () => {
 
         try {
-            const { data } = await api.get(`/api/comments/${postId}`);
+            const { data } = await getCommentsByPostIdAPI(postId);
             if (data.success) {
                 setComments(data.comments);
             }
@@ -83,7 +91,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
         e.preventDefault();
         setPostLoading(true);
 
-        const isUserLogged = await isLoggedIn();
+        const isUserLogged = await getUserId();
         if (!isUserLogged) {
             toast.error("Login to continue.");
             navigate(`/login?callback${location.pathname}`)
@@ -96,9 +104,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
         const text = commentData.get("text");
 
         try {
-            const { data } = await api.post(`/api/comments/${postId}`, {
-                text: text
-            });
+            const { data } = await addCommentByPostIdAPI(postId, text);
 
             console.log(data);
 
@@ -237,7 +243,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                         type: "just"
                     }}
                 >
-                    {currentlyLoggedUser && post.likes.includes(currentlyLoggedUser) ? (
+                    {userId && post.likes.includes(userId) ? (
                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor" className="ri-heart-3-fill h-20 w-20 text-red-500 absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                         </svg>
@@ -255,7 +261,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                         await likePost(postId, fetchPost);
                         handelAnimateLike();
                     }}>
-                        {currentlyLoggedUser && post.likes.includes(currentlyLoggedUser) ? (
+                        {userId && post.likes.includes(userId) ? (
                             <i className="ri-heart-3-fill text-red-500"></i>
                         ) : (
                             <i className="ri-heart-3-line"></i>
@@ -274,7 +280,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                     <i onClick={share} className="ri-share-circle-line cursor-pointer"></i>
                 </div>
                 <div className="cursor-pointer" onClick={savePost.bind(this, postId, fetchPost)}>
-                    {currentlyLoggedUser && post.saved.includes(currentlyLoggedUser) ? (
+                    {userId && post.saved.includes(userId) ? (
                         <i className="ri-bookmark-fill cursor-pointer"></i>
                     ) : (
                         <i className="ri-bookmark-line cursor-pointer"></i>
@@ -320,7 +326,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                                                 </div>
                                                 <div className="likes flex items-start justify-between flex-col">
                                                     <div onClick={likeComment.bind(this, comment._id, fetchComments)}>
-                                                        {(currentlyLoggedUser && comment.likes.indexOf(currentlyLoggedUser) >= 0) ?
+                                                        {(userId && comment.likes.indexOf(userId) >= 0) ?
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 hover:text-red-600 cursor-pointer text-red-500">
                                                                 <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
                                                             </svg>
@@ -331,7 +337,7 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
                                                         }
                                                     </div>
                                                     {
-                                                        currentlyLoggedUser && comment.author._id === currentlyLoggedUser && (
+                                                        userId && comment.author._id === userId && (
                                                             <div className="w-4 h-4" onClick={deleteComment.bind(this, comment._id, fetchComments, fetchPost)}>
                                                                 <svg id="delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full cursor-pointer text-gray-500 hover:text-gray-200">
                                                                     <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clipRule="evenodd" />

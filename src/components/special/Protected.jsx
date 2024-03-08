@@ -1,8 +1,7 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
-import Cookies from "js-cookie";
-import api from "../../assets/api";
+import { getUserId, isLoggedInAPI } from "../../utility/apiUtils";
 
 
 export default function Protected(props) {
@@ -10,12 +9,12 @@ export default function Protected(props) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isLoggedIn = async () => {
-        const userId = Cookies.get("userId");
+    const [userId, setUserId] = useState(false);
 
-        console.log(userId);
+    const isLoggedIn = useCallback(async () => {
+        const currentUserId = await getUserId();
 
-        if (!userId) {
+        if (!currentUserId) {
             if (location.pathname !== "/login") {
                 navigate(`/login?callback=${location.pathname}`)
             }
@@ -23,19 +22,25 @@ export default function Protected(props) {
         }
 
         else {
-            const { data } = await api.get("/api/isloggedin");
+            const { data } = await isLoggedInAPI();
+            setUserId(currentUserId);
             if (!data.success) {
                 navigate("/login");
             }
         }
-    }
+    }, [location.pathname, navigate])
 
     useEffect(() => {
         isLoggedIn();
-    })
+    }, [isLoggedIn])
+
+    useEffect(() => {
+        console.log(userId);
+    }, [userId])
+
     return (
         <div>
-            <Component />
+            <Component userId={userId} />
         </div>
     )
 }

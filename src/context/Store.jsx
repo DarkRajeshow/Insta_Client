@@ -1,9 +1,8 @@
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import isLoggedIn from '@/utility/isLoggedIn';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { likeCommentAPI, likePostAPI, toggleFollowAPI, deleteCommentAPI, deletePostAPI, savePostAPI } from '../utility/apiUtils'
+import { likeCommentAPI, likePostAPI, toggleFollowAPI, deleteCommentAPI, deletePostAPI, savePostAPI, unReadNotificationsAPI, recentChatsAPI, logoutAPI, getMessagesAPI, getUserId, unReadMessagesAPI } from '../utility/apiUtils'
 
 export const Context = createContext();
 
@@ -13,19 +12,31 @@ export const StoreProvider = ({ children }) => {
     const location = useLocation();
 
 
-    //messages 
+    const [currentlyLoggedUser, setCurrentlyLoggedUser] = useState(false);
     const [socket, setSocket] = useState(null);
     const [loggedUserData, setLoggedUserData] = useState(null);
     const [recentChatUsers, setRecentChatUsers] = useState(null);
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState("");
     const [selectedUserForChat, setSelectedUserForChat] = useState(null);
-    const [messageLoading, setMessageLoading] = useState(false);
-    const [userInMessageView, setUserInMessageView] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [unReadNotificationCount, setUnReadNotificationCount] = useState(0);
+    const [unReadMessages, setUnReadMessages] = useState(0);
+    const [isSelectedUserOnline, setIsSelectedUserOnline] = useState(false);
+
+    const [msgLoading, setMsgLoading] = useState(true);
+
+    const findUserId = async () => {
+        const userIdStatus = await getUserId();
+        setCurrentlyLoggedUser(userIdStatus);
+    }
+
+    useEffect(() => {
+        findUserId();
+    }, [])
 
     const likePost = async (postId, reFetchPost) => {
-        const isUserLogged = await isLoggedIn();
+        const isUserLogged = await getUserId();
         if (!isUserLogged) {
             toast.error("Login to continue.");
             navigate(`/login?callback=${location.pathname}`)
@@ -33,7 +44,6 @@ export const StoreProvider = ({ children }) => {
         else {
             try {
                 const { data } = await likePostAPI(postId)
-                console.log(data);
                 if (data.success) {
                     toast.success(data.status);
                     await reFetchPost();
@@ -50,7 +60,7 @@ export const StoreProvider = ({ children }) => {
     }
 
     const likeComment = async (commentId, reloadComments) => {
-        const isUserLogged = await isLoggedIn();
+        const isUserLogged = await getUserId();
         if (!isUserLogged) {
             toast.error("Login to continue.");
             navigate(`/login?callback${location.pathname}`)
@@ -129,9 +139,9 @@ export const StoreProvider = ({ children }) => {
     }
 
     const savePost = async (postId, fetchPost) => {
-        const userLogged = await isLoggedIn();
+        const isUserLogged = await getUserId();
 
-        if (!userLogged) {
+        if (!isUserLogged) {
             toast.error("Login to continue.");
             navigate(`/login?callback=${location.pathname}`)
             return;
@@ -156,6 +166,25 @@ export const StoreProvider = ({ children }) => {
         }
     }
 
+    const logOut = async () => {
+        try {
+            const { data } = await logoutAPI();
+
+            if (data.success) {
+                socket.emit("leave_room", currentlyLoggedUser);
+                socket.emit("offline", currentlyLoggedUser);
+                setLoggedUser(null);
+                toast.success(data.status);
+                navigate("/login");
+            }
+            else {
+                toast.error(data.status)
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong.")
+        }
+    }
 
 
     const toggleFollow = async (userIdToFollow) => {
@@ -182,6 +211,63 @@ export const StoreProvider = ({ children }) => {
         }
     }
 
+    const fetchUnReadNotifications = async (userId) => {
+        try {
+            const { data } = await unReadNotificationsAPI(userId);
+            if (data.success) {
+                setUnReadNotificationCount(data.notificationCount);
+            }
+            else {
+                toast.success(data.status)
+            }
+        } catch (error) {
+            console.log("Problem : " + error);
+        }
+    }
+
+    const fetchUnReadMessages = async (userId) => {
+        try {
+            const { data } = await unReadMessagesAPI(userId);
+            if (data.success) {
+                setUnReadMessages(data.unReadMessagesCount);
+            }
+            else {
+                toast.success(data.status)
+            }
+        } catch (error) {
+            console.log("Problem : " + error);
+        }
+    }
+
+
+    const fetchRecentChats = useCallback(async () => {
+        if (!currentlyLoggedUser) {
+            setMsgLoading(false);
+            return;
+        }
+        try {
+            const { data } = await recentChatsAPI();
+            if (data.success) {
+                setRecentChatUsers(data.recentChats);
+            }
+        } catch (error) {
+            console.error('Error fetching logged user:', error);
+        }
+        setMsgLoading(false);
+    }, [currentlyLoggedUser, setRecentChatUsers]);
+
+
+    const fetchMessagesFromDB = useCallback(async () => {
+        if (selectedUserForChat && currentlyLoggedUser) {
+            try {
+                const { data } = await getMessagesAPI(selectedUserForChat._id);
+                if (data.success) setMessages(data.messages);
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+    }, [selectedUserForChat, currentlyLoggedUser, setMessages]);
+
 
     return (
         <Context.Provider value={{
@@ -206,12 +292,19 @@ export const StoreProvider = ({ children }) => {
             toggleFollow,
             recentChatUsers,
             setRecentChatUsers,
-            messageLoading,
-            setMessageLoading,
-            userInMessageView,
-            setUserInMessageView,
             notifications,
-            setNotifications
+            setNotifications,
+            fetchUnReadNotifications,
+            unReadNotificationCount,
+            isSelectedUserOnline,
+            setIsSelectedUserOnline,
+            fetchRecentChats,
+            msgLoading,
+            logOut,
+            fetchUnReadMessages,
+            setMsgLoading,
+            fetchMessagesFromDB,
+            unReadMessages
         }}>
             <div>{children}</div>
         </Context.Provider>

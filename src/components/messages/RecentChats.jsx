@@ -3,14 +3,19 @@ import { Context } from "../../context/Store";
 import PropTypes from 'prop-types';
 import filePath from "../../assets/filePath";
 import convertToAMPM from "../../utility/covertToAMPM";
+import { CheckCheck } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 let RecentChats = ({ setCollapse }) => {
 
   const { recentChatUsers, setSelectedUserForChat, selectedUserForChat } = useContext(Context);
 
+  const { userId } = useParams();
+
   const [users, setUsers] = useState(recentChatUsers);
   const [query, setQuery] = useState("");
 
+  const navigate = useNavigate();
   const SearchUsers = useCallback(
     () => {
       const searchResult = recentChatUsers.filter((user) => {
@@ -20,18 +25,25 @@ let RecentChats = ({ setCollapse }) => {
       setUsers(searchResult);
     }, [recentChatUsers, query]);
 
-
   useEffect(() => {
-    console.log(recentChatUsers);
     SearchUsers();
   }, [SearchUsers, recentChatUsers]);
 
+  useEffect(() => {
+    if (userId) {
+      const currentUser = recentChatUsers.filter(user => user._id === userId);
+      setCollapse(true)
+      setSelectedUserForChat(currentUser[0]);
+    }
+  }, [setSelectedUserForChat, recentChatUsers, setCollapse, userId]);
+
+
   return (
-    <div className="px-1 relative select-none animate-in">
-      <div className={`w-full  rounded-t-lg h-10 sm:h-14 text-lg sm:text-xl bg-zinc-800/30 hover:bg-zinc-700/50 px-2 sm:p-4 font-bold text-light flex items-center`}>
+    <div className="relative rounded-lg h-full select-none animate-in border-2 border-[#12101A] overflow-hidden">
+      <div className={`w-full rounded-t-lg h-10 sm:h-14 text-lg sm:text-xl bg-zinc-800/80 hover:bg-zinc-700/50 px-2 sm:p-4 font-bold text-light flex items-center`}>
         <h1>Chats</h1>
       </div>
-      <div className="px-2 sm:px-4 py-2 sm:py-3">
+      <div className="px-2 py-2 sm:py-3">
         <div className="search flex text-xs sm:text-sm text-light items-center gap-2 px-2 border border-light/10 rounded-sm focus-within:border-light/30 focus-within:border-b-green-400">
           <i className="ri-search-line py-2"></i>
           <input
@@ -49,23 +61,30 @@ let RecentChats = ({ setCollapse }) => {
             return (
               <div onClick={async () => {
                 if (user) {
-                  await setSelectedUserForChat(user);
                   await setCollapse(true);
+                  await setSelectedUserForChat(user);
+                  navigate(`/messages/${user._id}`)
                 }
               }} className={`cursor-pointer follow bottom-0 py-3 px-2 flex items-center gap-2 hover:bg-zinc-700/50 rounded-lg transition-all ${selectedUserForChat && selectedUserForChat._id === user._id ? "bg-zinc-700/60" : "bg-zinc-700/10"} "`} key={user._id}>
                 <img src={`${filePath}/${user.dp}`} className="h-10 w-10 rounded-full" alt={user.name} />
                 <div className="flex flex-col text-light/90 w-full">
-                  <h3 className="text-sm text-zinc-300 capitalize">{user.name.toLocaleLowerCase()}</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm text-zinc-300 capitalize font-semibold">{user.name.toLocaleLowerCase()}</h3>
+                    {user.lastMessage && <p className={`text-[11px] ${user.unreadMessagesCount !== 0 && "text-blue-400 font-semibold"}`}>{convertToAMPM(user.lastMessage.timestamp)}</p>}
+                  </div>
+
                   <div className="text-xs text-zinc-400/60">
                     {user.lastMessage ?
                       <div className="flex items-center justify-between">
-                        <p className="capitalize">{`${user.lastMessage.sender !== user._id ? "You" : user.name.split(" ")[0].toLocaleLowerCase()}: ${user.lastMessage.content.length > 15 ? user.lastMessage.content.slice(0, 15) + "..." : user.lastMessage.content}`}</p>
-                        <p>{convertToAMPM(user.lastMessage.timestamp)}</p>
+                        <p className="capitalize flex items-center justify-center gap-1">
+                          <span>{user.lastMessage.sender !== user._id ? <CheckCheck className={`w-4 h-4 ${user.lastMessage.read && "text-blue-500"}`} /> : user.name.split(" ")[0].toLocaleLowerCase() + " :"}</span>
+                          <span>{user.lastMessage.content.length > 15 ? user.lastMessage.content.slice(0, 15) + "..." : user.lastMessage.content}</span>
+                        </p>
+                        {user.unreadMessagesCount !== 0 && <p className="p-1.5 h-[18px] w-[18px] rounded-full flex items-center justify-center bg-blue-600 text-light font-bold text-[10px]">{user.unreadMessagesCount}</p>}
                       </div>
                       :
                       <p>No recent chats</p>
                     }
-
                   </div>
                 </div>
               </div>
@@ -79,6 +98,7 @@ let RecentChats = ({ setCollapse }) => {
               </div>
             )
           }
+
           {
             recentChatUsers.length === 0 && (
               <div className="flex bg-zinc-700/10 rounded-lg items-center justify-center h-[70vh] sm:h-[65vh] mt-1 sm:mt-2">
@@ -97,7 +117,6 @@ RecentChats.propTypes = {
 };
 
 RecentChats = memo(RecentChats, (prevProps, nextProps) => {
-  // Only re-render when setCollapse prop changes
   return prevProps.setCollapse === nextProps.setCollapse;
 });
 

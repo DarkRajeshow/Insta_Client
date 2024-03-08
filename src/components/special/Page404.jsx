@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 export default function Page404({ messege = "The page you are looking for is not available." }) {
   return (
     <section className="page_404 h-screen bg-white">

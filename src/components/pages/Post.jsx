@@ -22,8 +22,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import isLoggedIn from '../../utility/isLoggedIn'
 import SmartLoader from "../reusable/SmartLoader";
 import { Context } from '../../context/Store'
-import api from "../../assets/api";
 import filePath from "../../assets/filePath";
+import { postByIdAPI, getCommentsByPostIdAPI, addCommentByPostIdAPI } from "../../utility/apiUtils";
 
 
 export default function Post() {
@@ -47,7 +47,7 @@ export default function Post() {
 
   const fetchPost = useCallback(async () => {
     try {
-      const { data } = await api.get(`/api/posts/${id}`);
+      const { data } = await postByIdAPI(id);
 
       if (data.success) {
         setPost(data.post);
@@ -67,7 +67,7 @@ export default function Post() {
   const showComments = async () => {
 
     try {
-      const { data } = await api.get(`/api/comments/${id}`);
+      const { data } = await getCommentsByPostIdAPI(id);
 
       if (data.success) {
         setComments(data.comments);
@@ -97,9 +97,7 @@ export default function Post() {
     const text = commentData.get("text");
 
     try {
-      const { data } = await api.post(`/api/comments/${id}`, {
-        text: text
-      });
+      const { data } = await addCommentByPostIdAPI(post._id, text)
 
       console.log(data);
 
@@ -240,7 +238,7 @@ export default function Post() {
             </div>
 
             <SheetTrigger onClick={showComments}>
-              <div className="likes flex items-center flex-col justify-center ">
+              <div className="comments flex items-center flex-col justify-center ">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 cursor-pointer">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
                 </svg>
