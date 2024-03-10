@@ -18,7 +18,6 @@ export default function UserSearchCard({ user }) {
         findUserId();
     }, [])
 
-
     return (
         <div key={user.username} className="flex items-center justify-between fade-in-5 animate-in p-4 rounded-full bg-zinc-700/15">
             <Link to={`/user/${user.username}`} className="outline-none">

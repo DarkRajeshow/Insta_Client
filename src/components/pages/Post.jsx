@@ -16,21 +16,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import Cookies from "js-cookie";
 import Page404 from "../special/Page404";
 import { Skeleton } from "@/components/ui/skeleton"
 import isLoggedIn from '../../utility/isLoggedIn'
 import SmartLoader from "../reusable/SmartLoader";
 import { Context } from '../../context/Store'
 import filePath from "../../assets/filePath";
-import { postByIdAPI, getCommentsByPostIdAPI, addCommentByPostIdAPI } from "../../utility/apiUtils";
+import { postByIdAPI, getCommentsByPostIdAPI, addCommentByPostIdAPI, getUserId } from "../../utility/apiUtils";
 
 
 export default function Post() {
 
   const location = useLocation();
-  const currentlyLoggedUser = Cookies.get("userId");
   const { id } = useParams();
+  const [currentlyLoggedUser, setCurrentlyLoggedUser] = useState(false);
   const [post, setPost] = useState(null);
   const [hoverVideo, setHoverVideo] = useState(false);
   const [error, setError] = useState(false)
@@ -44,6 +43,17 @@ export default function Post() {
 
   const navigate = useNavigate();
   const videoRef = useRef(null);
+
+
+
+  const findUserId = async () => {
+    const userIdStatus = await getUserId();
+    setCurrentlyLoggedUser(userIdStatus)
+  }
+
+  useEffect(() => {
+    findUserId();
+  }, [])
 
   const fetchPost = useCallback(async () => {
     try {

@@ -73,13 +73,6 @@ function App() {
       const { data } = await specialUserAPI(userId, `name dp`);
       if (data.success) {
         toast.message((
-          // <div className='flex gap-1 items-center justify-between w-full h-full'  >
-          //   <div className='flex flex-col gap-1'>
-          //     <h3 className='text-zinc-400 text-sm'>Message form <span className='font-semibold text-green-300'>{data.user.name.split(" ")[0]}</span></h3>
-          //     <p className='text-orange-200 font-semibold text-base'>{message.length > 10 ? message.slice(0, 18) + "..." : message}</p>
-          //   </div>
-          //   <Link to={'/messages'} className='bg-zinc-700 scale-90 hover:scale-100 hover:bg-blue-700 text-light py-1.5 px-3 rounded-full font-sm font-semibold'>View</Link>
-          // </div>
           <div to={`/messages`} className='flex items-center hover:bg-zinc-800 bg-zinc-800/20 rounded-lg my-1 justify-between w-full py-3 px-2 relative  cursor-pointer'>
             <div className="follow bottom-0 flex items-center gap-2 transition-all">
               <img src={`${filePath}/${message.relatedUser.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={message.relatedUser.name} />

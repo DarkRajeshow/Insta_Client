@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types';
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 
 const Select = SelectPrimitive.Root
@@ -26,6 +26,11 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
+SelectTrigger.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+
 const SelectScrollUpButton = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
@@ -35,6 +40,10 @@ const SelectScrollUpButton = React.forwardRef(({ className, ...props }, ref) => 
   </SelectPrimitive.ScrollUpButton>
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+
+SelectScrollUpButton.propTypes = {
+  className: PropTypes.string,
+};
 
 const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownButton
@@ -47,12 +56,16 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }, ref) =
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
+SelectScrollDownButton.propTypes = {
+  className: PropTypes.string,
+};
+
 const SelectContent = React.forwardRef(({ className, children, position = "", ...props }, ref) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state:closed]:fade-out-0 data-[state:open]:fade-in-0 data-[state:closed]:zoom-out-95 data-[state:open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -71,6 +84,12 @@ const SelectContent = React.forwardRef(({ className, children, position = "", ..
 ))
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
+SelectContent.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+  position: PropTypes.string,
+};
+
 const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
@@ -78,6 +97,10 @@ const SelectLabel = React.forwardRef(({ className, ...props }, ref) => (
     {...props} />
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
+
+SelectLabel.propTypes = {
+  className: PropTypes.string,
+};
 
 const SelectItem = React.forwardRef(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Item
@@ -98,6 +121,11 @@ const SelectItem = React.forwardRef(({ className, children, ...props }, ref) => 
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
+SelectItem.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+
 const SelectSeparator = React.forwardRef(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
@@ -105,6 +133,10 @@ const SelectSeparator = React.forwardRef(({ className, ...props }, ref) => (
     {...props} />
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+
+SelectSeparator.propTypes = {
+  className: PropTypes.string,
+};
 
 export {
   Select,

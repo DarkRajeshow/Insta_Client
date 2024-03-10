@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import { GripVertical } from "lucide-react"
 import * as ResizablePrimitive from "react-resizable-panels"
-
 import { cn } from "@/lib/utils"
 
 const ResizablePanelGroup = ({
@@ -14,6 +14,10 @@ const ResizablePanelGroup = ({
     )}
     {...props} />
 )
+
+ResizablePanelGroup.propTypes = {
+  className: PropTypes.string,
+};
 
 const ResizablePanel = ResizablePrimitive.Panel
 
@@ -36,5 +40,10 @@ const ResizableHandle = ({
     )}
   </ResizablePrimitive.PanelResizeHandle>
 )
+
+ResizableHandle.propTypes = {
+  withHandle: PropTypes.bool,
+  className: PropTypes.string,
+};
 
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle }

@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import PropTypes from 'prop-types'
@@ -12,9 +11,6 @@ export default function Footer({ showFooter }) {
     const location = useLocation();
 
     const fetchLoggedUser = async () => {
-        if (!Cookies.get("jwt")) {
-            return;
-        }
         try {
             const { data } = await getUserAPI();
             if (data.success) {

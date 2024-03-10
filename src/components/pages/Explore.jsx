@@ -1,10 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { useState } from "react";
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Cookies from "js-cookie";
 import { Skeleton } from "../ui/skeleton";
 import ExplorePost from "../reusable/ExplorePost";
-import { exporeDataAPI, searchPostsAPI } from "../../utility/apiUtils";
+import { exporeDataAPI, getUserId, searchPostsAPI } from "../../utility/apiUtils";
 
 export default function Explore() {
 
@@ -15,7 +14,17 @@ export default function Explore() {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchLoading, setSearchLoading] = useState(false);
 
-    const currentlyLoggedUser = Cookies.get("userId");
+    const [currentlyLoggedUser, setCurrentlyLoggedUser] = useState(false);
+
+    const findUserId = async () => {
+        const userIdStatus = await getUserId();
+        setCurrentlyLoggedUser(userIdStatus)
+    }
+
+    useEffect(() => {
+        findUserId();
+    }, [])
+
 
 
     const fetchExplorePosts = useCallback(async () => {
