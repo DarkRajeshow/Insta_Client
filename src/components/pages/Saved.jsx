@@ -42,13 +42,13 @@ export default function Saved({ userId }) {
 
     return (
         <div className="w-full min-h-screen bg-zinc-900 text-white">
-            <div className="flex items-center justify-between px-6 mb-3 mt-10">
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:items-center justify-between px-6 mb-3 mt-10">
                 <div className="">
                     <h1 className="text-4xl font-bold mb-2 text-gray-300">Your <strong className="text-[#6EB5FF]">Saved</strong> Content</h1>
                     <p className="text-xs text-gray-400 sm:text-sm sm:w-[400px] lg:w-[600px]"> keeps all your saved photos, and videos in one convenient place, ensuring you never lose track of your digital treasures!</p>
                 </div>
-                <div className="text-gray-500 cursor-pointer h-14 w-14">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="hover:text-light animate-pulse">
+                <div className="hidden sm:block text-gray-500 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="hover:text-light animate-pulse h-20 w-20 sm:h-14 sm:w-14">
                         <path fillRule="evenodd" d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z" clipRule="evenodd" />
                     </svg>
                 </div>
@@ -56,7 +56,7 @@ export default function Saved({ userId }) {
             <div className="SavedPosts mb-20 m-auto ">
 
                 <InfiniteScroll
-                    className="grid grid-cols-3 gap-1 my-10 py-4 text-center border-t border-t-gray-800 mx-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 my-10 py-4 text-center border-t border-t-gray-800 mx-6"
                     dataLength={SavedPosts.length}
                     next={fetchSavedPosts}
                     hasMore={hasMore}

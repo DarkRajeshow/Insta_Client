@@ -151,20 +151,20 @@ const Upload = () => {
 
   return (
     <div className="w-full min-h-screen bg-zinc-900 text-white py-5">
-      <div className="flex justify-between items-center px-4">
+      <div className="flex justify-between items-center px-4 font-medium">
         <Link to="/profile" className="text-sm text-blue-500">
-          <i className="ri-arrow-left-s-line"></i> profile
+          <i className="ri-arrow-left-s-line"></i> Profile
         </Link>
         <h2 className="leading-none text-sm">Upload Post</h2>
         <Link to="/" className="text-sm">
-          <i className="ri-home-line"></i> home
+          <i className="ri-home-line"></i> Home
         </Link>
       </div>
-      <div className='m-auto sm:w-[440px] '>
+      <div className='m-auto w-[90vw] sm:w-[440px] '>
         <div className="flex flex-col items-center gap-2 mt-20">
           <div className="image w-full sm:w-[440px] rounded-3xl aspect-square border-2 border-zinc-800 flex items-center justify-center">
             {!src && <div onClick={() => document.querySelector('#uploadForm input').click()} className='cursor-pointer h-full w-full border-dotted rounded-3xl flex items-center justify-center'>
-              <h1 className='text-4xl text-gray-400 font-bold'>Open file</h1>
+              <h1 className='text-3xl sm:text-4xl text-gray-400 font-bold'>Open file</h1>
             </div>
             }
 
@@ -227,7 +227,7 @@ const Upload = () => {
               <label htmlFor="caption" className='text-zinc-400'>Title / Caption <span className='text-red-400'>*</span></label>
               <textarea
                 required
-                className="px-3 py-2 w-full bg-zinc-900 border-2 h-40 border-zinc-800 resize-none rounded-md outline-none mb-10 mt-2 placeholder:text-zinc-600"
+                className="px-3 py-2 w-full bg-zinc-900 border-2 h-40 border-zinc-800 resize-none rounded-md outline-none mb-4 sm:mb-10 mt-2 placeholder:text-zinc-600"
                 placeholder="Write a caption..."
                 name="caption"
               ></textarea>

@@ -12,7 +12,7 @@ const NotificationCell = ({ notification }) => {
             <Link to={`${notificationType === "message" ? `/messages/${notification.relatedUser._id}` : "/posts"}`} className=''>
                 <DialogClose className='flex items-center hover:bg-zinc-800 bg-zinc-800/20 rounded-lg my-1 justify-between w-full py-3 px-2 relative  cursor-pointer'>
                     <div className="follow bottom-0 flex items-center gap-2 transition-all">
-                        <img src={`${filePath}/${notification.relatedUser.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={notification.relatedUser.name} />
+                        <img src={`${filePath}/${notification.relatedUser.dp}`} className="h-12 w-12 rounded-full border object-cover border-zinc-700" alt={notification.relatedUser.name} />
                         <div className="flex flex-col text-left text-light">
                             <p className="capitalize text-sm font-semibold">{notification.message.length > 20 ? notification.message.slice(0, 20) + "..." : notification.message}</p>
                             <p className="text-xs text-zinc-400">Message from {notification.relatedUser.name}</p>

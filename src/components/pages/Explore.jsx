@@ -82,25 +82,27 @@ export default function Explore() {
     }, [searchQuery])
 
     return (
-        <div className="w-full min-h-screen bg-zinc-900 text-white">
-            <div className="bg-zinc-800 flex text-xl max-w-[600px] px-6 m-auto  items-center justify-between rounded-full py-4 gap-1">
-                <i className="searchInput text-white ri-search-line text-2xl"></i>
-                <input
-                    autoCapitalize="none"
-                    autoComplete="new-password"
-                    id="searchInput"
-                    className="ml-1 w-full bg-transparent outline-none text-light placeholder:text-zinc-500"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search"
-                />
-                {searchLoading &&
-                    <i className="ri-refresh-line animate-spin text-2xl text-light/60"></i>}
+        <div className="w-full min-h-screen bg-zinc-900 text-white my-6">
+            <div className='px-6 max-w-[600px] m-auto'>
+                <div className="bg-zinc-800 flex sm:text-xl items-center justify-between rounded-full py-3 px-5 sm:py-4 sm:px-5 gap-1">
+                    <i className="text-white ri-search-line text-xl sm:text-2xl"></i>
+                    <input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoCapitalize="false"
+                        autoComplete="off"
+                        id="searchInput"
+                        className="ml-1 w-full bg-transparent outline-none text-light placeholder:text-zinc-600"
+                        type="text"
+                        placeholder="Search with username, name"
+                    />
+                    {searchLoading &&
+                        <i className="ri-refresh-line animate-spin sm:text-2xl text-blue-300"></i>}
+                </div>
             </div>
             <div className="explorePosts mb-20 m-auto">
                 <InfiniteScroll
-                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 my-10 py-4 text-center border-t border-t-gray-800 mx-6 overflow-hidden"
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1 my-10 py-4 text-center border-t border-t-gray-800 mx-6 overflow-hidden"
                     dataLength={explorePosts.length}
                     next={fetchExplorePosts}
                     hasMore={hasMore}

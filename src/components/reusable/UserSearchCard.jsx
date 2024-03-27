@@ -19,10 +19,10 @@ export default function UserSearchCard({ user }) {
     }, [])
 
     return (
-        <div key={user.username} className="flex items-center justify-between fade-in-5 animate-in p-4 rounded-full bg-zinc-700/15">
+        <div key={user.username} className="flex items-center justify-between fade-in-5 animate-in p-2 pr-3 sm:p-4 rounded-full bg-zinc-700/15">
             <Link to={`/user/${user.username}`} className="outline-none">
-                <div className="text-white flex items-center gap-4">
-                    <div className="image w-[60px] h-[60px] rounded-full bg-sky-100 border border-zinc-600">
+                <div className="text-white flex items-center gap-3 sm:gap-4">
+                    <div className="image w-14 h-14 sm:w-[60px] sm:h-[60px] rounded-full bg-sky-100 border border-zinc-600">
                         <img
                             className="h-full w-full object-cover rounded-full"
                             src={`${filePath}/${user.dp}`}
@@ -30,7 +30,7 @@ export default function UserSearchCard({ user }) {
                         />
                     </div>
                     <div className="text flex flex-col gap-1">
-                        <h3 className='text-xl'>{user.username}</h3>
+                        <h3 className='text-base sm:text-xl'>{user.username}</h3>
                         <h4 className="text-xs opacity-30 leading-none">{user.name}</h4>
                     </div>
                 </div>
@@ -38,7 +38,7 @@ export default function UserSearchCard({ user }) {
             <div className='select-none'>
                 {
                     user._id === currentlyLoggedUser ? (
-                        <button className="bg-zinc-700/70 px-4 py-3 rounded-full flex text-gray-300 items-center justify-center gap-1 transition-all">
+                        <button className="bg-zinc-700/70 text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-3 rounded-full flex text-gray-300 items-center justify-center gap-1 transition-all">
                             You
                         </button>
                     ) : (

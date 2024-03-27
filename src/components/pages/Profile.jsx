@@ -105,10 +105,10 @@ const Profile = () => {
     // fetchLoggedUser
 
     return (
-        <Dialog>
-            <DialogContent className="h-[65vh] w-[450px] bg-dark text-light border-none block">
+        <Dialog className="">
+            <DialogContent className="h-[65vh] rounded-md w-[95vw] sm:w-[450px] bg-dark text-light border-none block ">
                 <div className='flex flex-col gap-1.5 mb-4'>
-                    <h1 className="text-2xl font-bold">{followTitle}</h1>
+                    <h1 className="text-xl sm:text-2xl font-semibold sm:font-bold">{followTitle}</h1>
                     <div className="search flex text-xs sm:text-sm text-light items-center gap-2 px-2 border border-light/10 focus-within:border-light/30  rounded-sm focus-within:border-b-green-400">
                         <i className="ri-search-line py-2"></i>
                         <input
@@ -131,10 +131,10 @@ const Profile = () => {
                             return (
                                 <div key={User._id} className='flex items-center hover:bg-zinc-800 bg-zinc-800/50 rounded-lg my-1 justify-between w-full py-3 px-2'>
                                     <Link to={`/user/${User.username}`} className="follow bottom-0 flex items-center gap-3 transition-all">
-                                        <img src={`${filePath}/${User.dp}`} className="h-12 w-12 rounded-full border border-zinc-700" alt={User.name} />
+                                        <img src={`${filePath}/${User.dp}`} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-zinc-700" alt={User.name} />
                                         <div className="flex flex-col text-light">
-                                            <h3 className="text-base capitalize font-semibold">{User.name}</h3>
-                                            <p className="text-sm font-semibold">@{User.username}</p>
+                                            <h3 className="text-sm sm:text-base capitalize sm:font-semibold">{User.name}</h3>
+                                            <p className="text-xs sm:text-sm sm:font-semibold">@{User.username}</p>
                                         </div>
                                     </Link>
                                     <FollowButton fetchLoggedUser={fetchLoggedUser} initialFollowStatus={initialFollowStatus} userToFollow={User._id} />
@@ -162,8 +162,8 @@ const Profile = () => {
                 <div>
                     <h1 className='pl-6 text-lg capitalize'>{user.username}</h1>
                 </div>
-                <div className="flex items-center pl-6 pr-[12vw] mt-8 gap-20">
-                    <div className="w-[12vw] h-[12vw] bg-sky-100 rounded-full">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center pl-6 pr-[12vw] mt-8 gap-6 sm:gap-16 md:gap-20">
+                    <div className="w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] md:w-[200px] md:h-[200px] bg-sky-100 rounded-full">
                         <img
                             className="h-full w-full object-cover rounded-full border border-light"
                             src={user.dp && `${filePath}/${user.dp}`}
@@ -172,21 +172,21 @@ const Profile = () => {
                     </div>
                     <div className="stats font-semibold text-lg grid grid-cols-3 gap-2 items-center justify-between ">
                         <a href={'#posts'}
-                            className="flex bg-zinc-800/20 flex-col items-center justify-center hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all">
+                            className="flex bg-zinc-800/20 flex-col items-center justify-center hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all text-sm sm:text-xl">
                             <h3>{user.posts?.length}</h3>
                             <h4>Posts</h4>
                         </a>
                         <DialogTrigger onClick={() => {
                             setfollowTitle("Followers")
                             showFollow("followers");
-                        }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all">
+                        }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all text-sm sm:text-xl">
                             <h3>{user.followers?.length}</h3>
                             <h4>Followers</h4>
                         </DialogTrigger>
                         <DialogTrigger onClick={() => {
                             setfollowTitle("Following")
                             showFollow("following");
-                        }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all">
+                        }} className="flex flex-col items-center justify-center bg-zinc-800/20 hover:bg-zinc-800 p-3 rounded-lg cursor-pointer transition-all text-sm sm:text-xl">
                             <h3>{user.following?.length}</h3>
                             <h4>Following</h4>
                         </DialogTrigger>
@@ -197,14 +197,14 @@ const Profile = () => {
                     <p className="text-xs tracking-tight opacity-50">{user.bio}</p>
                 </div>
 
-                <div className='flex items-center justify-between mt-5 px-6'>
+                <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mt-5 px-6'>
                     <div className="flex items-center justify-start gap-3">
                         <Link to="/edit" className="px-3 py-2 bg-zinc-800 rounded-md">Edit Profile
                         </Link>
                         <button onClick={logOut} className="bg-red-800 px-3 py-2 rounded-md">Log Out
                         </button>
                     </div>
-                    <div className="flex items-center justify-center gap-5 ">
+                    <div className="hidden sm:flex items-center justify-center gap-5 ">
                         <button onClick={() => {
                             window.history.back();
                         }} className='bg-dark hover:bg-zinc-800 text-light font-bold px-3 py-2 rounded-md flex items-center gap-2'>
@@ -223,7 +223,7 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <div id='posts' className="posts relative min-h-screen grid grid-cols-3 gap-1 my-10 py-4 text-center border-t-2 border-t-zinc-700 mx-6">
+                <div id='posts' className="posts relative min-h-screen grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 my-10 py-4 text-center border-t-2 border-t-zinc-700 mx-6">
                     {!loading && user.posts.map((post, index) => (
                         <PostCard post={post} index={index} key={index} userId={user._id} />
                     ))}

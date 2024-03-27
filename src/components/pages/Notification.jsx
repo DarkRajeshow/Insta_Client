@@ -64,8 +64,8 @@ const NotificationsPage = ({ userId }) => {
 
     <>
       <div className='flex gap-1.5 mb-4 items-center justify-between my-5 px-2'>
-        <h1 className="text-2xl font-bold">Notifications</h1>
-        <button disabled={notifications.length === 0} onClick={clearAllNotifications} className={` ${notifications.length === 0 && "text-gray-500 hover:text-gray-500 hover:no-underline"}text-red-300 hover:text-red-500`}>Clear all</button>
+        <h1 className="text-xl sm:text-2xl font-semibold sm:font-bold">Notifications</h1>
+        <button disabled={notifications.length === 0} onClick={clearAllNotifications} className={` ${notifications.length === 0 && "text-gray-500 hover:text-gray-500 hover:no-underline"}text-red-300 text-sm sm:text-base hover:text-red-500`}>Clear all</button>
       </div>
       <div className="mt-1 h-[78%] overflow-auto px-2">
         {

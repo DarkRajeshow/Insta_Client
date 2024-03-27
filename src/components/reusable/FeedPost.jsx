@@ -162,12 +162,12 @@ function FeedPostComponent({ initialPost, following, toggleFollow }) {
     }, [videoRef]);
 
     return (
-        <div key={postId} className="post visible animate-in fade-in-5 bg-zinc-800/20 rounded-lg mt-10 w-full min-h-[50vh] font-medium my-14 border-b border-zinc-800/80 py-10 px-4">
+        <div key={postId} className="post visible animate-in fade-in-5 bg-zinc-800/20 rounded-lg w-full min-h-[50vh] font-medium mb-8 sm:mt-10 sm:my-14 border-b border-zinc-800/80 py-10 px-4">
             <div className="flex items-center justify-between">
                 <Link to={`/user/${post.author.username}`} className="title flex items-center gap-2">
                     <div className="w-10 h-10 bg-sky-100 rounded-full">
                         <img
-                            className="h-full w-full aspect-square rounded-full object-cover"
+                            className="h-full w-full aspect-square rounded-full border border-light/20 object-cover"
                             src={`${filePath}/${post.author.dp}`}
                             alt={`${post.author.name}`}
                         />

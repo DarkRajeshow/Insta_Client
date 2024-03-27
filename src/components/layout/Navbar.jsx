@@ -47,44 +47,50 @@ export default function Navbar({ notShowNav }) {
 
     return (
         <Dialog>
-            <nav className={`bg-transparent text-light mt-5 mb-3 sm:my-5 w-full top-5 select-none ${notShowNav && "hidden"}`}>
-                <DialogContent className="h-[65vh] w-full sm:w-[450px] bg-dark text-light border-none block overflow-y-auto">
+            <nav className={`bg-zinc-900 z-50 sticky text-light pt-5 pb-3 sm:py-5 w-full top-0 select-none ${notShowNav && "hidden"}`}>
+                <DialogContent className="h-[65vh] rounded-md w-[90vw] sm:w-[450px] bg-dark text-light border-none block overflow-y-auto">
                     <NotificationsPage userId={userId} fetchUnReadNotifications={fetchUnReadNotifications} />
                 </DialogContent>
-                <div className="nav flex justify-between items-center px-6">
+                <div className="nav flex justify-between items-center pl-5 pr-3 sm:px-6">
                     <Link to={"/"} className="flex content-center gap-2">
-                        <img src="/logo.png" alt="Logo" className="h-10" />
-                        {socket && socket.id && <span className="bg-green-300 h-1.5 w-1.5 border-blue-500 border rounded-full inline-block"></span>}
+                        <img src="/logo.png" alt="Logo" className="h-10 mt-2" />
+                        {socket && socket.id && <span className="bg-green-300 mt-2 h-1.5 w-1.5 border-blue-500 border rounded-full inline-block"></span>}
                     </Link>
                     <div className="relative icons flex gap-1">
+                        <DialogTrigger className="sm:hidden flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 text-blue-300">
+                            {unReadNotificationCount !== 0 && <p className=" font-semibold text-sm">{unReadNotificationCount}</p>}
+                            <BellRing strokeWidth={1.5} className="" />
+                        </DialogTrigger>
 
-                        {!userId ? (
-                            <>
-                                <Link to="/login">
-                                    <button className="text-sm px-3 py-2 rounded-md bg-zinc-800/50 hover:bg-zinc-700">Login</button>
-                                </Link>
-                                <Link to="/signup">
-                                    <button className="text-sm px-3 py-2 rounded-md bg-zinc-800/50 hover:bg-zinc-700">Sign up</button>
-                                </Link>
-                            </>
-                        ) : (
-                            <>
-                                <DialogTrigger className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 text-blue-300">
-                                    {unReadNotificationCount !== 0 && <p className=" font-semibold text-sm">{unReadNotificationCount}</p>}
-                                    <BellRing strokeWidth={1.5} className="" />
-                                </DialogTrigger>
-                                <Link to={'/messages'} className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 text-green-300">
-                                    {unReadMessages !== 0 && <p className=" font-semibold text-sm">{unReadMessages}</p>}
-                                    <MessageCircle strokeWidth={1.5} className="" />
-                                </Link>
-                                <Link to={'/profile'} className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 ">
-                                    <CircleUserRound strokeWidth={1.5} className="" />
-                                </Link>
-                                <Link to="/upload" className="hover:bg-zinc-700/20 py-2 rounded-md px-2.5 ">
-                                    <UploadCloud strokeWidth={1.5} className="" />
-                                </Link>
-                            </>
-                        )}
+                        <div className="hidden sm:flex gap-1">
+                            {!userId ? (
+                                <>
+                                    <Link to="/login">
+                                        <button className="text-sm px-3 py-2 rounded-md bg-zinc-800/50 hover:bg-zinc-700">Login</button>
+                                    </Link>
+                                    <Link to="/signup">
+                                        <button className="text-sm px-3 py-2 rounded-md bg-zinc-800/50 hover:bg-zinc-700">Sign up</button>
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <DialogTrigger className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 text-blue-300">
+                                        {unReadNotificationCount !== 0 && <p className=" font-semibold text-sm">{unReadNotificationCount}</p>}
+                                        <BellRing strokeWidth={1.5} className="" />
+                                    </DialogTrigger>
+                                    <Link to={'/messages'} className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 text-green-300">
+                                        {unReadMessages !== 0 && <p className=" font-semibold text-sm">{unReadMessages}</p>}
+                                        <MessageCircle strokeWidth={1.5} className="" />
+                                    </Link>
+                                    <Link to={'/profile'} className="flex items-center justify-center gap-1 hover:bg-zinc-700/20 py-2 rounded-md px-2.5 ">
+                                        <CircleUserRound strokeWidth={1.5} className="" />
+                                    </Link>
+                                    <Link to="/upload" className="hover:bg-zinc-700/20 py-2 rounded-md px-2.5 ">
+                                        <UploadCloud strokeWidth={1.5} className="" />
+                                    </Link>
+                                </>
+                            )}
+                        </div>
 
                         <div onClick={() => {
                             setMenuOpen(!menuOpen)

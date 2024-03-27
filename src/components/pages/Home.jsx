@@ -94,10 +94,7 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen bg-zinc-900 text-white">
-      <div className="story px-3 flex gap-3 overflow-auto mt-5">
-        {/* Your story circles go here */}
-      </div>
-      <div className="feedPosts mb-20 w-[500px] m-auto">
+      <div className="feedPosts mb-20 max-w-[500px] m-auto p-2">
         <InfiniteScroll
           dataLength={feedPosts.length}
           next={fetchFeedPosts}

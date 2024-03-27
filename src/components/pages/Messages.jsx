@@ -89,7 +89,7 @@ export default function Messages({ userId }) {
     }, [userId, selectedUserForChat, messageInput, saveMessage, fetchMessagesFromDB, setMessageInput, socket]);
 
     return (
-        <main className='h-[80vh] md:h-[85vh] px-6 gap-0.5 flex' >
+        <main className='h-[80vh] md:h-[85vh] px-4 sm:px-6 gap-0.5 flex' >
             {(msgLoading || !recentChatUsers) && <SmartLoader className='h-[85vh] absolute w-full' />}
             {(!msgLoading && recentChatUsers) && <>
                 <div className='md:block hidden w-full'>

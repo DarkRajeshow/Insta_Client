@@ -66,11 +66,13 @@ let RecentChats = ({ setCollapse }) => {
                   navigate(`/messages/${user._id}`)
                 }
               }} className={`cursor-pointer follow bottom-0 py-3 px-2 flex items-center gap-2 hover:bg-zinc-700/50 rounded-lg transition-all ${selectedUserForChat && selectedUserForChat._id === user._id ? "bg-zinc-700/60" : "bg-zinc-700/10"} "`} key={user._id}>
-                <img src={`${filePath}/${user.dp}`} className="h-10 w-10 rounded-full" alt={user.name} />
+                <div className="aspect-square h-10 rounded-full">
+                  <img src={`${filePath}/${user.dp}`} className="h-full w-full rounded-full" alt={user.name} />
+                </div>
                 <div className="flex flex-col text-light/90 w-full">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm text-zinc-300 capitalize font-semibold">{user.name.toLocaleLowerCase()}</h3>
-                    {user.lastMessage && <p className={`text-[11px] ${user.unreadMessagesCount !== 0 && "text-blue-400 font-semibold"}`}>{convertToAMPM(user.lastMessage.timestamp)}</p>}
+                    {user.lastMessage && <p className={`text-[10px] sm:text-[11px] ${user.unreadMessagesCount !== 0 && "text-blue-400 font-semibold"}`}>{convertToAMPM(user.lastMessage.timestamp)}</p>}
                   </div>
 
                   <div className="text-xs text-zinc-400/60">
@@ -78,7 +80,7 @@ let RecentChats = ({ setCollapse }) => {
                       <div className="flex items-center justify-between">
                         <p className="capitalize flex items-center justify-center gap-1">
                           <span>{user.lastMessage.sender !== user._id ? <CheckCheck className={`w-4 h-4 ${user.lastMessage.read && "text-blue-500"}`} /> : user.name.split(" ")[0].toLocaleLowerCase() + " :"}</span>
-                          <span>{user.lastMessage.content.length > 15 ? user.lastMessage.content.slice(0, 15) + "..." : user.lastMessage.content}</span>
+                          <span>{user.lastMessage.content.length > 12 ? user.lastMessage.content.slice(0, 12) + "..." : user.lastMessage.content}</span>
                         </p>
                         {user.unreadMessagesCount !== 0 && <p className="p-1.5 h-[18px] w-[18px] rounded-full flex items-center justify-center bg-blue-600 text-light font-bold text-[10px]">{user.unreadMessagesCount}</p>}
                       </div>

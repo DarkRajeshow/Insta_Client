@@ -189,6 +189,15 @@ export const StoreProvider = ({ children }) => {
 
     const toggleFollow = async (userIdToFollow) => {
 
+        const isUserLogged = await getUserId();
+
+        if (!isUserLogged) {
+            toast.error("Login to continue.");
+            navigate(`/login?callback=${location.pathname}`)
+            return;
+        }
+
+
         try {
             const { data } = await toggleFollowAPI(userIdToFollow);
 

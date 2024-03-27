@@ -20,7 +20,7 @@ export default function FollowButton({ size, userToFollow, fetchLoggedUser, init
             if (fetchLoggedUser) {
                 fetchLoggedUser();
             }
-        }} className={`bg-zinc-800 px-4 py-1.5 rounded-full flex text-gray-300 items-center justify-center gap-1 transition-all hover:bg-blue-700 ${size === "big" ? "py-2" : "text-sm"}`}>
+        }} className={`bg-zinc-800 px-4 py-1.5 rounded-full flex text-gray-300 items-center justify-center gap-1 transition-all hover:bg-blue-700 ${size === "big" ? "text-sm sm:text-base py-2" : "text-xs sm:text-sm"}`}>
             {
                 loading && <span className='h-4 w-4 rounded-full border-[3px] border-light/70 border-t-transparent spin' />
             }

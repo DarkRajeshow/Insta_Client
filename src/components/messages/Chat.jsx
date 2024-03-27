@@ -107,7 +107,7 @@ const ChatComponent = ({ sendMessage, collapse, userId }) => {
               type: "message"
             });
           }
-        }} className='absolute bg-[#12101A] bottom-0 w-full p-2 flex items-center justify-between gap-2 shadow-[0_0_10px_1px] shadow-zinc-900'>
+        }} className='absolute bg-[#12101A] bottom-0 w-full p-2 flex items-center justify-between gap-2 shadow-[0_0_10px_1px] shadow-zinc-900 pb-6'>
           <div className='w-full border border-zinc-600/40 focus-within:border-zinc-600 flex rounded-sm items-center justify-between pr-2'>
             <input required className="w-[90%] text-light bg-transparent px-4 py-2 rounded-sm placeholder:text-zinc-600 outline-none" value={messageInput} onChange={(e) => {
               setMessageInput(e.target.value);
